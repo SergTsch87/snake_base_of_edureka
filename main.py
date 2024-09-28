@@ -14,15 +14,16 @@ green = (0, 255, 0)
 snake_block = 10
 snake_speed = 5
 
-# dis_width = 800
-# dis_height = 600
+frame_thickness = 5
+# dis_width = 800 + frame_thickness
+# dis_height = 600 + frame_thickness
 # Для прототипу:
-dis_width = 300
-dis_height = 300
+dis_width = 300 + frame_thickness
+dis_height = 300 + frame_thickness
 
 # to-do list:
     # 1) Додати if name == main
-    # 2) Додати сітку для поля
+    # - 2) Додати сітку для поля
     # 3) Намалювати рамку для поля
         # - 4) Відобразити швидкість змійки на екран
     # 5) Коли змійці задаємо напрям, протилежний до її поточного руху, - тоді:
