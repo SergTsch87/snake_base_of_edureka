@@ -22,8 +22,8 @@ dis_height = 300
 
 # to-do list:
     # 1) Додати if name == main
-    # 2) Додати сітку для поля
-    # 3) Намалювати рамку для поля
+    # 2) - Додати сітку для поля
+    # 3) Намалювати рамку для поля (створив нову гілку - add_frame_thickness)
         # - 4) Відобразити швидкість змійки на екран
     # 5) Коли змійці задаємо напрям, протилежний до її поточного руху, - тоді:
     #   а) Якщо довжина змійки = 1:
@@ -62,6 +62,19 @@ dis_height = 300
     #     Mobile version:
     #           Change the settings and layout of the game so that they work best on touchscreens.
 
+# git checkout -b add_frame_thickness
+# git status
+# git add .\main.py
+# git commit -m "Додав код з рамкою, fra"
+# git push -u origin add_frame_thickness
+# git checkout main
+# git pull origin main
+
+# git branch -m master old_master
+# git branch -m m_1 master
+# git push origin -u master
+# git push origin -u old_master
+# git push origin --delete master
 
 def draw_grid():
     for x in range(0, dis_width, snake_block):
@@ -83,8 +96,8 @@ def message(msg, color):
     dis.blit(mesg, [dis_width/6, dis_height/3])
 
 def game_loop():
-    game_over = False
-    game_close = False
+    game_over = False   # стан завершення гри в цілому, і коли воно встановлено на True, гра повністю завершується
+    game_close = False  # стан, коли гравець програв і має вибір — або почати гру заново, або вийти
 
     x1 = dis_width / 2
     y1 = dis_height / 2
@@ -119,6 +132,13 @@ def game_loop():
             if event.type == pygame.QUIT:
                 game_over = True
 
+            # Помилкова логіка з напрямком змійки при зміні на протилежний напрям
+            # Проблема полягає в тому, що зміна напрямку відбувається без перевірки на те,
+            # чи це протилежний напрямок до поточного.
+            # Якщо змійка змінює напрямок на протилежний при довжині більше 1,
+            # то вона фактично зіткається сама з собою, і гра завершується.
+            # Для уникнення цього потрібно додати логіку, яка блокує зміну напрямку
+            # на протилежний при довжині змійки більше 1.
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     x1_change -= snake_block
@@ -146,9 +166,18 @@ def game_loop():
         snake_head.append(y1)
         snake_list.append(snake_head)
 
+        # Цей код видаляє перший елемент у списку snake_list,
+        # якщо довжина списку перевищує довжину змійки (length_of_snake).
+        # Це робиться для того, щоб змійка рухалася вперед,
+        # а її хвіст "відрізався", якщо вона не зростає після прийому їжі.
         if len(snake_list) > length_of_snake:
             del snake_list[0]
 
+        # Перевірка на зіткнення змійки з самою собою
+        # Логіка перевіряє, чи голова змійки (snake_head) перетинається
+        # з будь-якою іншою частиною її тіла, яке представлено списком snake_list.
+        # Якщо є збіг, змінна game_close встановлюється в True,
+        # що означає кінець гри через зіткнення змійки з собою.
         for x in snake_list[:-1]:
             if x == snake_head:
                 game_close = True
@@ -158,6 +187,9 @@ def game_loop():
 
         pygame.display.update()
 
+        # Зростання змійки після кожного прийому їжі.
+        # Коли координати голови змійки (x1, y1) збігаються з координатами їжі (foodx, foody),
+        # генерується нова їжа, і змінна length_of_snake збільшується на 1, що означає зростання змійки.
         if x1 == foodx and y1 == foody:
             foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
             foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
