@@ -72,16 +72,16 @@ dis_height = 300
     # git checkout main
     # git pull origin main
 
-# Є дві гілки: master (m_0) та branch (m_1), - треба зробити гілку m_1 новою гілкою master.
-# При бажанні, можна буде повернути назад роль гілки master гілці m_0.
+# Є дві гілки: main (m_0) та branch (m_1), - треба зробити гілку m_1 новою гілкою main.
+# При бажанні, можна буде повернути назад роль гілки main гілці m_0.
     # Перейменовуєш:
-    #     # git branch -m master old_master
-    #     # git branch -m m_1 master
+    #     # git branch -m main temp_main
+    #     # git branch -m m_1 main
     # Пушиш:
-    #     # git push origin -u master
-    #     # git push origin -u old_master
+    #     # git push origin -u main
+    #     # git push origin -u temp_main
     # Вилучаєш резервну копію на сервері:
-    #     # git push origin --delete master
+    #     # git push origin --delete main
 
 
 # Створити нову гілку, та запушити її на сервер:
