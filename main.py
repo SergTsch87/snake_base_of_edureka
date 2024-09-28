@@ -3,144 +3,181 @@ import pygame
 import time
 import random
 
+
+white = (255, 255, 255)
+black = (0, 0, 0)
+red = (213, 50, 80)
+blue = (50, 153, 213)
+yellow = (255, 255, 102)
+green = (0, 255, 0)
+
+snake_block = 10
+snake_speed = 5
+
+# dis_width = 800
+# dis_height = 600
+# Для прототипу:
+dis_width = 300
+dis_height = 300
+
 # to-do list:
-    # 1) Додати сітку для поля
-    # 2) Намалювати рамку для поля
-    # 3) Відобразити швидкість змійки на екран
-    # 4) Коли змійці задаємо напрям, протилежний до її поточного руху, - тоді:
+    # 1) Додати if name == main
+    # 2) Додати сітку для поля
+    # 3) Намалювати рамку для поля
+        # - 4) Відобразити швидкість змійки на екран
+    # 5) Коли змійці задаємо напрям, протилежний до її поточного руху, - тоді:
     #   а) Якщо довжина змійки = 1:
     #        змійка просто зупиняється.
     #   б) Якщо довжина змійки > 1:
     #        гра завершується (так, наче змійка "наїхала" на саму себе)
         # Але ж, так не повинно бути!..
         # Змійка просто повинна продовжувати рухатись у своєму поточному напрямку
+    # 6) Розбити код на функції
+    # 7) Використати ООП
 
-def main():
-    pygame.init()
+    # 8) Чудові поради з сайту щодо можливих подальших покращень гри Змійка:
+    #     Extra Features That Can Be Added To This Game
+        
+    #     There are many things that can be added to the Snake game to make it more fun and interesting. Here are some suggestions:
 
-    white = (255, 255, 255)
-    black = (0, 0, 0)
-    red = (213, 50, 80)
-    blue = (50, 153, 213)
-    yellow = (255, 255, 102)
-    green = (0, 255, 0)
+    #     Use different levels with rising amounts of challenge.
+    #           As the game goes on, you can add barriers or make the snake move faster.
+    #     Power-ups:
+    #           Add things that give the player brief benefits, like making the snake move faster, making it longer, or letting it go through walls.
+    #     Special food:
+    #           Make special food things that only show up sometimes and give the snake extra points or special powers when it eats them.
+    #     Keep track of the people with the highest scores:
+    #           Set up a way to keep track of who has the highest scores. Store the scores in a file or a database and show the ranking.
+    #     5.Sound effects and music:
+    #           Add sound effects when things happen, like when you eat food, hit something, or finish a level. Add background sounds to make the game more enjoyable.
 
-    # dis_width = 800
-    # dis_height = 600
-    # Для прототипу:
-    dis_width = 300
-    dis_height = 300
-
-    dis = pygame.display.set_mode((dis_width, dis_height))
-    pygame.display.set_caption("Змійка")
-
-    clock = pygame.time.Clock()
-
-    snake_block = 10
-    snake_speed = 5
-
-    font_style = pygame.font.SysFont("bahnshrift", 25)
-    score_font = pygame.font.SysFont("comicsansms", 35)
-
-    def your_score(score):
-        value = score_font.render("Your score: " + str(score), True, yellow)
-        dis.blit(value, [0, 0])
+    #     Customizable options:
+    #           Let players change game settings, such as the speed of the snake, the size of the screen, or the colour scheme, to their liking.
+    #     Two-player mode:
+    #           Make a mode where two people can play against each other on the same screen, each controlling their own snake.
+    #     Game over animations:
+    #           When the game is over, add animations or visual effects like an explosion or a screen that shows the score.
+    #     Bonus Challenge:
+    #           Add bonus tasks or minigames to the main game so that players can earn extra points or prizes.
+    #     Mobile version:
+    #           Change the settings and layout of the game so that they work best on touchscreens.
 
 
-    def our_snake(snake_block, snake_list):
-        for x in snake_list:
-            pygame.draw.rect(dis, black, [x[0], x[1], snake_block, snake_block])
-    
-    def message(msg, color):
-        mesg = font_style.render(msg, True, color)
-        dis.blit(mesg, [dis_width/6, dis_height/3])
+def draw_grid():
+    for x in range(0, dis_width, snake_block):
+        pygame.draw.line(dis, black, (x, 0), (x, dis_height))
+    for y in range(0, dis_height, snake_block):
+        pygame.draw.line(dis, black, (0, y), (dis_width, y))
 
-    def game_loop():
-        game_over = False
-        game_close = False
+def your_score(score):
+    value = score_font.render("Your score: " + str(score), True, yellow)
+    dis.blit(value, [0, 0])
 
-        x1 = dis_width / 2
-        y1 = dis_height / 2
 
-        x1_change = 0
-        y1_change = 0
+def our_snake(snake_block, snake_list):
+    for x in snake_list:
+        pygame.draw.rect(dis, black, [x[0], x[1], snake_block, snake_block])
 
-        snake_list = []
-        length_of_snake = 1
+def message(msg, color):
+    mesg = font_style.render(msg, True, color)
+    dis.blit(mesg, [dis_width/6, dis_height/3])
 
-        foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
-        foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
+def game_loop():
+    game_over = False
+    game_close = False
 
-        while not game_over:
-            while game_close == True:
-                dis.fill(blue)
-                message("You Lost! Press Q-Quit or C-Play Again", red)
-                your_score(length_of_snake - 1)
-                pygame.display.update()
+    x1 = dis_width / 2
+    y1 = dis_height / 2
 
-                for event in pygame.event.get():
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_q:
-                            game_over = True
-                            game_close = False
-                        
-                        if event.key == pygame.K_c:
-                            game_loop()
+    x1_change = 0
+    y1_change = 0
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    game_over = True
+    snake_list = []
+    length_of_snake = 1
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LEFT:
-                        x1_change -= snake_block
-                        y1_change = 0
-                    elif event.key == pygame.K_RIGHT:
-                        x1_change += snake_block
-                        y1_change = 0
-                    elif event.key == pygame.K_UP:
-                        x1_change = 0
-                        y1_change -= snake_block
-                    elif event.key == pygame.K_DOWN:
-                        x1_change = 0
-                        y1_change += snake_block
+    foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
+    foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
 
-            if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
-                game_close = True
-            
-            x1 += x1_change
-            y1 += y1_change
+    while not game_over:
+        while game_close == True:
             dis.fill(blue)
-            pygame.draw.rect(dis, green, [foodx, foody, snake_block, snake_block])
-            snake_head = []
-            snake_head.append(x1)
-            snake_head.append(y1)
-            snake_list.append(snake_head)
-
-            if len(snake_list) > length_of_snake:
-                del snake_list[0]
-
-            for x in snake_list[:-1]:
-                if x == snake_head:
-                    game_close = True
-
-            our_snake(snake_block, snake_list)
+            # draw_grid()
+            message("You Lost! Press Q-Quit or C-Play Again", red)
             your_score(length_of_snake - 1)
-
             pygame.display.update()
 
-            if x1 == foodx and y1 == foody:
-                foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
-                foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
-                length_of_snake += 1
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        game_over = True
+                        game_close = False
+                    
+                    if event.key == pygame.K_c:
+                        game_loop()
 
-            clock.tick(snake_speed)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game_over = True
 
-        pygame.quit()
-        quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    x1_change -= snake_block
+                    y1_change = 0
+                elif event.key == pygame.K_RIGHT:
+                    x1_change += snake_block
+                    y1_change = 0
+                elif event.key == pygame.K_UP:
+                    x1_change = 0
+                    y1_change -= snake_block
+                elif event.key == pygame.K_DOWN:
+                    x1_change = 0
+                    y1_change += snake_block
 
-    game_loop()
+        if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
+            game_close = True
+        
+        x1 += x1_change
+        y1 += y1_change
+        dis.fill(blue)
+        draw_grid()
+        pygame.draw.rect(dis, green, [foodx, foody, snake_block, snake_block])
+        snake_head = []
+        snake_head.append(x1)
+        snake_head.append(y1)
+        snake_list.append(snake_head)
+
+        if len(snake_list) > length_of_snake:
+            del snake_list[0]
+
+        for x in snake_list[:-1]:
+            if x == snake_head:
+                game_close = True
+
+        our_snake(snake_block, snake_list)
+        your_score(length_of_snake - 1)
+
+        pygame.display.update()
+
+        if x1 == foodx and y1 == foody:
+            foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
+            foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
+            length_of_snake += 1
+
+        clock.tick(snake_speed)
+
+    pygame.quit()
+    quit()
 
 
-if __name__ == "__main__":
-    main()
+
+pygame.init()
+
+dis = pygame.display.set_mode((dis_width, dis_height))
+pygame.display.set_caption("Змійка")
+
+clock = pygame.time.Clock()
+
+font_style = pygame.font.SysFont("bahnshrift", 25)
+score_font = pygame.font.SysFont("comicsansms", 35)
+
+game_loop()
