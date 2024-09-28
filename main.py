@@ -62,19 +62,43 @@ dis_height = 300
     #     Mobile version:
     #           Change the settings and layout of the game so that they work best on touchscreens.
 
-# git checkout -b add_frame_thickness
-# git status
-# git add .\main.py
-# git commit -m "Додав код з рамкою, fra"
-# git push -u origin add_frame_thickness
-# git checkout main
-# git pull origin main
+# Створюємо нову гілку, пушимо її на сервер,
+# а потім перемикаємося назад на основну гілку main, щоб завантажити останні зміни з сервера
+    # git checkout -b add_frame_thickness
+    # git status
+    # git add .\main.py
+    # git commit -m "Додав код з рамкою, fra"
+    # git push -u origin add_frame_thickness
+    # git checkout main
+    # git pull origin main
 
-# git branch -m master old_master
-# git branch -m m_1 master
-# git push origin -u master
-# git push origin -u old_master
-# git push origin --delete master
+
+# Є дві гілки: master (m_0) та branch (m_1), - треба зробити гілку m_1 новою гілкою master.
+# При бажанні, можна буде повернути назад роль гілки master гілці m_0.
+    # Перейменовуєш:
+    #     # git branch -m master old_master
+    #     # git branch -m m_1 master
+    # Пушиш:
+    #     # git push origin -u master
+    #     # git push origin -u old_master
+    # Вилучаєш резервну копію на сервері:
+    #     # git push origin --delete master
+
+
+# Створити нову гілку, та запушити її на сервер:
+    # git checkout -b new-branch-name
+        # Це створить нову гілку з іменем new-branch-name та одразу перемкне тебе на цю гілку.
+
+        # Якщо в тебе є зміни, які ти хочеш додати в нову гілку, виконай команди:
+    # git status
+    # git add .
+    # git commit -m "Коментар для коміту"
+
+        # Пуш нової гілки на сервер:
+    # git push -u origin new-branch-name
+        # Прапор -u (або --set-upstream) встановлює зв'язок між локальною гілкою та віддаленою гілкою на сервері, щоб ти міг в майбутньому просто використовувати git push без вказування гілки.
+        # Після цього нова гілка буде доступна на сервері.
+
 
 def draw_grid():
     for x in range(0, dis_width, snake_block):
