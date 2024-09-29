@@ -60,31 +60,16 @@ import random
     # git checkout main
     # git pull origin main
 
-# Є дві гілки: main (m_0) та branch (m_1), - треба зробити гілку m_1 новою гілкою main.
-# При бажанні, можна буде повернути назад роль гілки main гілці m_0.
+# Є дві гілки: master (m_0) та branch (m_1), - треба зробити гілку m_1 новою гілкою master.
+# При бажанні, можна буде повернути назад роль гілки master гілці m_0.
     # Перейменовуєш:
-    #     # git branch -m main temp_main
-    #     # git branch -m m_1 main
+    #     # git branch -m master old_master
+    #     # git branch -m m_1 master
     # Пушиш:
-    #     # git push origin -u main
-    #     # git push origin -u temp_main
+    #     # git push origin -u master
+    #     # git push origin -u old_master
     # Вилучаєш резервну копію на сервері:
-    #     # git push origin --delete main
-
-
-# Створити нову гілку, та запушити її на сервер:
-    # git checkout -b new-branch-name
-        # Це створить нову гілку з іменем new-branch-name та одразу перемкне тебе на цю гілку.
-
-        # Якщо в тебе є зміни, які ти хочеш додати в нову гілку, виконай команди:
-    # git status
-    # git add .
-    # git commit -m "Коментар для коміту"
-
-        # Пуш нової гілки на сервер:
-    # git push -u origin new-branch-name
-        # Прапор -u (або --set-upstream) встановлює зв'язок між локальною гілкою та віддаленою гілкою на сервері, щоб ти міг в майбутньому просто використовувати git push без вказування гілки.
-        # Після цього нова гілка буде доступна на сервері.
+    #     # git push origin --delete master# git branch -m master old_master
 
 def init_params():
     params =  {
@@ -109,11 +94,10 @@ def init_params():
 
 
 def draw_grid(params, dis):
-    for x in range(0, params["dis_width"], params["snake_block"]):
-        pygame.draw.line(dis, params["black"], (x, 0), (x, params["dis_height"]))
-    for y in range(0, params["dis_height"], params["snake_block"]):
-        pygame.draw.line(dis, params["black"], (0, y), (params["dis_width"], y))
-
+    for x in range(0, dis_width, snake_block):
+        pygame.draw.line(dis, black, (x, 0), (x, dis_height))
+    for y in range(0, dis_height, snake_block):
+        pygame.draw.line(dis, black, (0, y), (dis_width, y))
 
 def snake_score(score, score_font, params, dis):
     value = score_font.render("Your score: " + str(score), True, params["yellow"])
