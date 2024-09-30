@@ -93,7 +93,7 @@ def init_params():
     return params
 
 
-def draw_grid(params, dis):
+def draw_grid(params, dis, dis_width, snake_block, dis_height, black):
     for x in range(0, dis_width, snake_block):
         pygame.draw.line(dis, black, (x, 0), (x, dis_height))
     for y in range(0, dis_height, snake_block):
@@ -217,7 +217,7 @@ def game_loop(params, dis, score_font, clock, font_style):
         y1 += y1_change
         
         dis.fill(params["blue"])
-        draw_grid(params, dis)
+        draw_grid(params, dis, params["dis_width"], snake_block, params["dis_height"], params["black"])
         
         snake_head = snake_growth(dis, params["green"], foodx, foody, params["snake_block"], x1, y1, snake_list)
         
