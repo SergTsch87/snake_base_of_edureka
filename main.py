@@ -159,8 +159,8 @@ def update_snake(x1, y1, snake_list):
 # якщо довжина списку перевищує довжину змійки (length_of_snake).
 # Це робиться для того, щоб змійка рухалася вперед,
 # а її хвіст "відрізався", якщо вона не зростає після прийому їжі.
-# def remove_the_tail_to_move_forward(snake_list, length_of_snake, stop_snake()):
-def remove_the_tail_to_move_forward(snake_list, length_of_snake):
+# def trim_snake_tail(snake_list, length_of_snake, stop_snake()):
+def trim_snake_tail(snake_list, length_of_snake):
     # if not stop_snake():
     if len(snake_list) > length_of_snake:
         del snake_list[0]
@@ -171,12 +171,12 @@ def msg_lost(msg, color, font_style, params, dis):
     dis.blit(mesg, [params["dis_width"]/6, params["dis_height"]/3])
 
 
-def check_for_a_snake_collision_with_itself(snake_list, snake_head, state_when_a_player_has_lost_the_current_game):
+def self_collision(snake_list, snake_head, game_lost_state):
     for x in snake_list[:-1]:
         if x == snake_head:
-            state_when_a_player_has_lost_the_current_game = True
+            game_lost_state = True
             pygame.time.delay(2000)
-    return state_when_a_player_has_lost_the_current_game
+    return game_lost_state
 
 
 # Зростання змійки після кожного прийому їжі.
@@ -193,12 +193,12 @@ def check_food_consumption(x1, y1, food_x, food_y, length_of_snake, params):
 # Функція зупинки змійки у момент зіткнення
 # def stop_snake():
 #     x1_change = y1_change = 0
-#     state_when_a_player_has_lost_the_current_game = True
+#     game_lost_state = True
 #     return True
 
 # -------------------------------------
 # Функції завершення гри
-def game_over_animation(dis, colors):
+def gameover_anim(dis, colors):
     for color in colors:
         dis.fill(color)
         pygame.display.update()
@@ -218,7 +218,7 @@ def fade_to_black(dis):
 
 def game_loop(params, dis, score_font, clock, font_style):
     game_over_status = False
-    state_when_a_player_has_lost_the_current_game = False
+    game_lost_state = False
 
     x1 = params["dis_width"] / 2
     y1 = params["dis_height"] / 2
@@ -236,7 +236,7 @@ def game_loop(params, dis, score_font, clock, font_style):
     food_y = round(random.randrange(0, params["dis_height"] - snake_block) / 10.0) * 10.0
 
     while not game_over_status:
-        while state_when_a_player_has_lost_the_current_game == True:
+        while game_lost_state == True:
             dis.fill(params["blue"])
             msg_lost("You Lost! Press Q-Quit or C-Play Again", params["red"], font_style, params, dis)
             snake_score(length_of_snake - 1, score_font, params, dis)
@@ -246,9 +246,9 @@ def game_loop(params, dis, score_font, clock, font_style):
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_q:
                         game_over_status = True
-                        state_when_a_player_has_lost_the_current_game = False
+                        game_lost_state = False
                         pygame.time.delay(2000)
-                        # game_over_animation(dis, colors)
+                        # gameover_anim(dis, colors)
                         fade_to_black(dis)
                     
                     if event.key == pygame.K_c:
@@ -258,7 +258,7 @@ def game_loop(params, dis, score_font, clock, font_style):
             if event.type == pygame.QUIT:
                 game_over_status = True
                 pygame.time.delay(2000)
-                # game_over_animation(dis, colors)
+                # gameover_anim(dis, colors)
                 fade_to_black(dis)
 
             # Помилкова логіка з напрямком змійки при зміні на протилежний напрям
@@ -303,13 +303,13 @@ def game_loop(params, dis, score_font, clock, font_style):
         
         # Обробка зіткнення змійки зі стіною
         if x1 >= params["dis_width"] or x1 < 0 or y1 >= params["dis_height"] or y1 < 0:
-            state_when_a_player_has_lost_the_current_game = True
+            game_lost_state = True
             pygame.time.delay(2000)
         # # if x1 >= params["dis_width"] or x1 < 0 or y1 >= params["dis_height"] or y1 < 0:
         # if (x1 == params["dis_width"] and x1_change > 0) or (x1 == 0 and x1_change < 0) or (y1 == params["dis_height"] and y1_change > 0) or (y1 == 0 and y1_change < 0):
         #     # Працює тіко для лівого та верхнього зіткнення, - і тіко для одиничної змійки...
         #     x1_change = y1_change = 0
-        #     state_when_a_player_has_lost_the_current_game = True
+        #     game_lost_state = True
         # else:    
         #     x1 += x1_change
         #     y1 += y1_change
@@ -329,10 +329,10 @@ def game_loop(params, dis, score_font, clock, font_style):
         # snake_head = update_snake(dis, params["green"], food_x, food_y, snake_block, x1, y1, snake_list, stop)
         snake_head = update_snake(x1, y1, snake_list)
         
-        # remove_the_tail_to_move_forward(snake_list, length_of_snake, stop_snake())
-        remove_the_tail_to_move_forward(snake_list, length_of_snake)
+        # trim_snake_tail(snake_list, length_of_snake, stop_snake())
+        trim_snake_tail(snake_list, length_of_snake)
 
-        state_when_a_player_has_lost_the_current_game = check_for_a_snake_collision_with_itself(snake_list, snake_head, state_when_a_player_has_lost_the_current_game)
+        game_lost_state = self_collision(snake_list, snake_head, game_lost_state)
 
         draw_snake(snake_block, snake_list, dis, params)
         snake_score(length_of_snake - 1, score_font, params, dis)
