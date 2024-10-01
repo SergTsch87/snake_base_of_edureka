@@ -3,6 +3,26 @@ import pygame
 import time
 import random
 
+
+# Що запропонував ChatGPT:
+
+# initialize_game()
+
+# while True:
+#     handle_events()
+#     update_snake()
+#     collision = check_collisions()
+#     if collision:
+#         game_over()
+#         break
+#     else:
+#         draw_game()
+        
+#         if not food_generated:
+#             generate_food()
+
+#     continue
+
 # (x1, y1) - координати голови змійки
 # (x1_change, y1_change) - відповідні осьові зміни руху змійки (які задають напрям руху голови змійки)
 
