@@ -7,7 +7,7 @@ import random
 # 0) - Прибрати усі змінні params["name"]
 # 1) Написати функції:
 # для визначення швидкості
-# для визначення балів / очок
+# для визначення балів / очок ( 1 бал - за одну їжу; 10 балів - за спец їжу )
 # для зупинки Змійки (в момент зіткнення)
 # 2) Створити нові функції
 # 3) Змінити керування Змійкою клавішами
@@ -230,6 +230,13 @@ def control_snake_keys(event, key_direction_map, length_of_snake, x1_change, y1_
     return x1_change, y1_change
 
 
+# Обробка зіткнення змійки зі стіною
+def handle_wall_collision(x1, y1, dis_width, dis_height):
+    if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
+        return True
+    return False
+
+
 def game_loop(params, dis, score_font, clock, font_style, dis_width, dis_height):
     # black, red, blue, yellow, green, colors, snake_size_link, snake_speed, dis_width, dis_height, last_key_pressed, game_over_status, game_lost_state, x1_change, y1_change, snake_coord_lists, length_of_snake = params
     black = params["black"]
@@ -286,23 +293,13 @@ def game_loop(params, dis, score_font, clock, font_style, dis_width, dis_height)
                 # gameover_anim(dis, colors)
                 fade_to_black(dis)
 
-            # control_snake_keys()
             x1_change, y1_change = control_snake_keys(event, key_direction_map, length_of_snake, x1_change, y1_change)
-            # if event.type == pygame.KEYDOWN and event.key in key_direction_map:
-            #     new_x_change, new_y_change = key_direction_map[event.key]
-
-            #     if length_of_snake == 1:    # Для змійки довжиною 1 можна змінювати напрямок без обмежень
-            #         x1_change, y1_change = new_x_change, new_y_change
-            #     else:                       # Для змійки більше ніж 1 сегмент - перевірка на протилежний напрямок
-            #         if (x1_change == 0 or x1_change + new_x_change != 0) and (y1_change == 0 or y1_change + new_y_change != 0):
-            #             x1_change, y1_change = new_x_change, new_y_change
 
         # stop = stop_snake()
         
         # Обробка зіткнення змійки зі стіною
-        if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
-            game_lost_state = True
-            pygame.time.delay(2000)
+        game_lost_state = handle_wall_collision(x1, y1, dis_width, dis_height)
+        pygame.time.delay(2000)        
         
         x1 += x1_change
         y1 += y1_change
