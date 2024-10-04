@@ -3,7 +3,7 @@ import pygame
 import time
 import random
 
-
+# 0) Додай від'ємний відлік часу (поки є спец їжа) на екран
 # 0) - Прибрати усі змінні params["name"]
 # 1) Написати функції:
 # для визначення швидкості
@@ -12,8 +12,8 @@ import random
 # 2) Створити нові функції
 # 3) Змінити керування Змійкою клавішами
 # 4) Змінити код відповідно до нового алгоритму (та перевірити, наскільки цей алгоритм відповідає правилам гри Змійка)
-# 5) Прибрати зайві коментарі
-# 6) Розділи графіку та логіку
+# 5) - Прибрати зайві коментарі
+# 6) - Розділи графіку та логіку
 
 # Що запропонував ChatGPT:
 
@@ -83,6 +83,14 @@ def init_params():
             "snake_coord_lists": [],
             "length_of_snake": 1,
     }
+
+    params["key_direction_map"] = {
+        pygame.K_LEFT: (-params["snake_size_link"], 0),
+        pygame.K_RIGHT: (params["snake_size_link"], 0),
+        pygame.K_UP: (0, -params["snake_size_link"]),
+        pygame.K_DOWN: (0, params["snake_size_link"]),
+    }
+
     return params
 
 # графіка
@@ -187,7 +195,43 @@ def fade_to_black(dis):
         pygame.time.delay(50)
 # -------------------------------------
 
+def process_endgame_input(params, dis, score_font, clock, font_style, dis_width, dis_height, game_over_status, game_lost_state):
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            game_over_status, game_lost_state = gameover_logic(event, game_over_status, game_lost_state, dis)
+            game_continuation(event, params, dis, score_font, clock, font_style, dis_width, dis_height)
+    return game_over_status, game_lost_state
+
+def gameover_logic(event, game_over_status, game_lost_state, dis):
+    if event.key == pygame.K_q:
+        game_over_status = True
+        game_lost_state = False
+        pygame.time.delay(2000)
+        # gameover_anim(dis, colors)
+        fade_to_black(dis)
+    return game_over_status, game_lost_state
+
+
+def game_continuation(event, params, dis, score_font, clock, font_style, dis_width, dis_height):
+    if event.key == pygame.K_c:
+        game_loop(params, dis, score_font, clock, font_style, dis_width, dis_height)
+
+
+def control_snake_keys(event, key_direction_map, length_of_snake, x1_change, y1_change):
+    if event.type == pygame.KEYDOWN and event.key in key_direction_map:
+        new_x_change, new_y_change = key_direction_map[event.key]
+
+        if length_of_snake == 1:    # Для змійки довжиною 1 можна змінювати напрямок без обмежень
+            x1_change, y1_change = new_x_change, new_y_change
+        else:                       # Для змійки більше ніж 1 сегмент - перевірка на протилежний напрямок
+            if (x1_change == 0 or x1_change + new_x_change != 0) and (y1_change == 0 or y1_change + new_y_change != 0):
+                x1_change, y1_change = new_x_change, new_y_change
+
+    return x1_change, y1_change
+
+
 def game_loop(params, dis, score_font, clock, font_style, dis_width, dis_height):
+    # black, red, blue, yellow, green, colors, snake_size_link, snake_speed, dis_width, dis_height, last_key_pressed, game_over_status, game_lost_state, x1_change, y1_change, snake_coord_lists, length_of_snake = params
     black = params["black"]
     red = params["red"]
     blue = params["blue"]
@@ -203,14 +247,19 @@ def game_loop(params, dis, score_font, clock, font_style, dis_width, dis_height)
     x1 = params["dis_width"] / 2
     y1 = params["dis_height"] / 2
 
-    x1_change = params["x1_change"] = 0
-    y1_change = params["y1_change"] = 0
+    # x1_change = params["x1_change"] = 0
+    # y1_change = params["y1_change"] = 0
+
+    x1_change = params["x1_change"]
+    y1_change = params["y1_change"]
 
     snake_coord_lists = params["snake_coord_lists"] = []
     length_of_snake = params["length_of_snake"] = 1
 
     snake_size_link = params["snake_size_link"]
 
+    key_direction_map = params["key_direction_map"]
+    
     food_x, food_y = get_coord_new_food(dis_width, snake_size_link, dis_height)
 
     # print(f"snake_coord_lists: {snake_coord_lists}")
@@ -224,55 +273,30 @@ def game_loop(params, dis, score_font, clock, font_style, dis_width, dis_height)
             # snake_score(length_of_snake - 1, score_font, yellow, dis)
             pygame.display.update()
 
-            for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_q:
-                        game_over_status = True
-                        game_lost_state = False
-                        pygame.time.delay(2000)
-                        # gameover_anim(dis, colors)
-                        fade_to_black(dis)
+            game_over_status, game_lost_state = process_endgame_input(params, dis, score_font, clock, font_style, dis_width, dis_height, game_over_status, game_lost_state)
+            # for event in pygame.event.get():
+            #     if event.type == pygame.KEYDOWN:
+            #         game_over_status, game_lost_state = gameover_logic(event, game_over_status, game_lost_state, dis)
+            #         game_continuation(event, params, dis, score_font, clock, font_style, dis_width, dis_height)
                     
-                    if event.key == pygame.K_c:
-                        game_loop(params, dis, score_font, clock, font_style, dis_width, dis_height)
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over_status = True
                 pygame.time.delay(2000)
                 # gameover_anim(dis, colors)
                 fade_to_black(dis)
-  
-            if event.type == pygame.KEYDOWN:
-                
-                if length_of_snake == 1:
-                    if event.key == pygame.K_LEFT and (x1_change == 0 or x1_change == snake_size_link):
-                        x1_change = -snake_size_link
-                        y1_change = 0
-                    elif event.key == pygame.K_RIGHT and (x1_change == 0 or x1_change == -snake_size_link):
-                        x1_change = snake_size_link
-                        y1_change = 0
-                    elif event.key == pygame.K_UP and (y1_change == 0 or y1_change == snake_size_link):
-                        x1_change = 0
-                        y1_change = -snake_size_link
-                    elif event.key == pygame.K_DOWN and (y1_change == 0 or y1_change == -snake_size_link):
-                        x1_change = 0
-                        y1_change = snake_size_link
-                
-                elif length_of_snake > 1:
-                    if event.key == pygame.K_LEFT and x1_change == 0:
-                        x1_change = -snake_size_link
-                        y1_change = 0
-                    elif event.key == pygame.K_RIGHT and x1_change == 0:
-                        x1_change = snake_size_link
-                        y1_change = 0
-                    elif event.key == pygame.K_UP and y1_change == 0:
-                        x1_change = 0
-                        y1_change = -snake_size_link
-                    elif event.key == pygame.K_DOWN and y1_change == 0:
-                        x1_change = 0
-                        y1_change = snake_size_link
-                
+
+            # control_snake_keys()
+            x1_change, y1_change = control_snake_keys(event, key_direction_map, length_of_snake, x1_change, y1_change)
+            # if event.type == pygame.KEYDOWN and event.key in key_direction_map:
+            #     new_x_change, new_y_change = key_direction_map[event.key]
+
+            #     if length_of_snake == 1:    # Для змійки довжиною 1 можна змінювати напрямок без обмежень
+            #         x1_change, y1_change = new_x_change, new_y_change
+            #     else:                       # Для змійки більше ніж 1 сегмент - перевірка на протилежний напрямок
+            #         if (x1_change == 0 or x1_change + new_x_change != 0) and (y1_change == 0 or y1_change + new_y_change != 0):
+            #             x1_change, y1_change = new_x_change, new_y_change
+
         # stop = stop_snake()
         
         # Обробка зіткнення змійки зі стіною
