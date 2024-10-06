@@ -2,6 +2,26 @@
 import pygame
 import time
 import random
+import config
+
+#  Додаткові можливості для гри
+    # Додати паузу: Можна додати можливість ставити гру на паузу,
+    # щоб гравець міг зупинити гру та відновити її, натиснувши певну клавішу.
+
+    # Система рівнів: Зробіть так, щоб зі зростанням довжини змійки
+    # збільшувалась швидкість гри або складність.
+
+    # Багатокористувацький режим: Додайте другий геймпад або клавіші для управління другою змійкою.
+    
+    # Реалізуйте систему досягнень: Додайте повідомлення гравцеві про досягнення,
+    # як-от "Ви досягли рекорду!" або "Ваша змійка виросла на 50 ланок!".
+
+# Ще поради щодо покращення гри:
+#     Розділіть логіку та графіку через класи (Snake, Food, Game).
+#     Оптимізуйте продуктивність через попереднє малювання сітки і рідкісні виклики pygame.display.update().
+#     Впровадьте ООП для кращої структури коду.
+#     Додайте нові функції (паузу, рівні складності, систему досягнень) для покращення геймплею.
+#     Винесіть налаштування у конфігураційний файл.
 
 # розділи логіку та графіку!
 # Зростання змійки після кожного прийому їжі.
@@ -117,6 +137,19 @@ def init_params_for_game_loop():
 
     return params
 
+# Те, чого немає у config.py:
+
+# key_direction_map = {
+#     pygame.K_LEFT: (-params["snake_size_link"], 0)
+#     pygame.K_RIGHT: (params["snake_size_link"], 0)
+#     pygame.K_UP: (0, -params["snake_size_link"])
+#     pygame.K_DOWN: (0, params["snake_size_link"])
+# }
+# clock =  pygame.time.Clock()
+# font_style =  pygame.font.SysFont("bahnshrift", 25)
+# score_font =  pygame.font.SysFont("comicsansms", 35)
+# dis =  pygame.display.set_mode((dis_width, dis_height))
+
 
 def init_params_for_main():
     pygame.init()
@@ -137,8 +170,8 @@ def init_params_for_main():
     pygame.display.set_caption("Змійка")
     # pygame.time.delay(2000)
 
-    print(f"params['dis'] == {params['dis']}")
-    print(f"type(params['dis']) == {type(params['dis'])}")
+    # print(f"params['dis'] == {params['dis']}")
+    # print(f"type(params['dis']) == {type(params['dis'])}")
 
     return params
 
@@ -295,6 +328,8 @@ def check_collision_with_walls(x1, y1, dis_width, dis_height):
 def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
     params = init_params_for_game_loop()
     black, red, blue, yellow, green, colors, snake_size_link, snake_speed, last_key_pressed, game_over_status, game_lost_state, x1_change, y1_change, snake_coord_lists, length_of_snake, key_direction_map = params["black"], params["red"], params["blue"], params["yellow"], params["green"], params["colors"], params["snake_size_link"], params["snake_speed"], params["last_key_pressed"], params["game_over_status"], params["game_lost_state"], params["x1_change"], params["y1_change"], params["snake_coord_lists"], params["length_of_snake"], params["key_direction_map"]
+    grid_surface = create_grid_surface(dis_width, dis_height, snake_size_link, black, blue)
+    
 
     x1 = dis_width / 2
     y1 = dis_height / 2
@@ -330,7 +365,7 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
         x1 += x1_change
         y1 += y1_change
         
-        grid_surface = create_grid_surface(dis_width, dis_height, snake_size_link, black, blue)
+        # grid_surface = create_grid_surface(dis_width, dis_height, snake_size_link, black, blue)
         draw_grid(dis, grid_surface)
         
         score = length_of_snake - 1 # to change!
@@ -358,6 +393,12 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
 
 
 def main():
+    # print(f"config.PARAMETERS = {config.PARAMETERS}")
+    # clock, dis_width, dis_height, dis, = config.PARAMETERS["clock"], config.PARAMETERS["dis_width"], config.PARAMETERS["dis_height"], config.PARAMETERS["dis"]
+    # print(f"config.PARAMETERS.clock = {config.PARAMETERS['clock']}")
+    # print(f"config.PARAMETERS.dis_width = {config.PARAMETERS['dis_width']}")
+    # print(f"config.PARAMETERS.dis_height = {config.PARAMETERS['dis_height']}")
+    # print(f"config.PARAMETERS.dis = {config.PARAMETERS['dis']}")
     params_main = init_params_for_main()
     clock, font_style, score_font, dis_width, dis_height, dis = params_main["clock"], params_main["font_style"], params_main["score_font"], params_main["dis_width"], params_main["dis_height"], params_main["dis"][0]
     
