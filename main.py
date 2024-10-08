@@ -4,6 +4,19 @@ import time
 import random
 import config
 
+# Напрямки:
+# (1, 0)
+# (-1, 0)
+# (0, 1)
+# (0, -1)
+
+# Перевір зайві змінні, які розпакував, - і прибери їх у моменті присвоєння (розпакування)
+
+# А що, як змінити "систему координат" для Змійки?
+# А саме - визначати координати кожної чарунки не за її кутами, а за її центром.
+# Відповідно, у нових функціях (які потребують координати Змійки, їжі тощо)
+# достатньо буде писати лише одну, а не дві, координати
+
 #  Додаткові можливості для гри
     # Додати паузу: Можна додати можливість ставити гру на паузу,
     # щоб гравець міг зупинити гру та відновити її, натиснувши певну клавішу.
@@ -28,8 +41,11 @@ import config
 # Коли координати голови змійки (x1, y1) збігаються з координатами їжі (food_x, food_y),
 # генерується нова їжа, і змінна params["length_of_snake"] збільшується на 1, що означає зростання змійки.
 
+# А ще ж можна автоматизувати гру (за допомогою AI та звичайних алгоритмів), пустивши Змійку у самостіну подорож!)
+
 # Зроби аналіз:
 # Чому витратив так багато часу на редагування кращого коду?
+    # Не знав деяких різних речей
 # Що саме робив неправильно з самого початку?
 # Що саме слід робити з початку, щоб зберегти у подальшому купу свого часу, і не робити зайву справу з кодом?
 
@@ -110,7 +126,7 @@ import config
     # 7) Використати ООП
 
 def init_params_for_game_loop():
-    params =  {
+    params_for_game_loop =  {
             "black": (0, 0, 0),
             "red": (213, 50, 80),
             "blue": (50, 153, 213),
@@ -128,14 +144,14 @@ def init_params_for_game_loop():
             "length_of_snake": 1
     }
 
-    params["key_direction_map"] = {
-        pygame.K_LEFT: (-params["snake_size_link"], 0),
-        pygame.K_RIGHT: (params["snake_size_link"], 0),
-        pygame.K_UP: (0, -params["snake_size_link"]),
-        pygame.K_DOWN: (0, params["snake_size_link"])
+    params_for_game_loop["key_direction_map"] = {
+        pygame.K_LEFT: (-params_for_game_loop["snake_size_link"], 0),
+        pygame.K_RIGHT: (params_for_game_loop["snake_size_link"], 0),
+        pygame.K_UP: (0, -params_for_game_loop["snake_size_link"]),
+        pygame.K_DOWN: (0, params_for_game_loop["snake_size_link"])
     }
 
-    return params
+    return params_for_game_loop
 
 # Те, чого немає у config.py:
 
@@ -154,7 +170,7 @@ def init_params_for_game_loop():
 def init_params_for_main():
     pygame.init()
 
-    params =  {
+    params_for_main =  {
         "clock":  pygame.time.Clock(),
         "font_style":  pygame.font.SysFont("bahnshrift", 25),
         "score_font":  pygame.font.SysFont("comicsansms", 35)
@@ -163,17 +179,17 @@ def init_params_for_main():
         # "dis_width": 800,
         # "dis_height": 600,
     # Для прототипу:
-    params["dis_width"] = 200
-    params["dis_height"] = 200
-    params["dis"] =  pygame.display.set_mode((params["dis_width"], params["dis_height"])),
+    params_for_main["dis_width"] = 200
+    params_for_main["dis_height"] = 200
+    params_for_main["dis"] =  pygame.display.set_mode((params_for_main["dis_width"], params_for_main["dis_height"])),
 
     pygame.display.set_caption("Змійка")
     # pygame.time.delay(2000)
 
-    # print(f"params['dis'] == {params['dis']}")
-    # print(f"type(params['dis']) == {type(params['dis'])}")
+    # print(f"params_for_main['dis'] == {params_for_main['dis']}")
+    # print(f"type(params_for_main['dis']) == {type(params_for_main['dis'])}")
 
-    return params
+    return params_for_main
 
 
 # Використання pygame.Surface для збереження сітки ігрового поля
@@ -223,15 +239,20 @@ def draw_food(dis, green, food_x, food_y, snake_size_link):
 
 
 # логіка
-# Збільшуємо довжину змійки під час споживання шматка їжі
+# Змінюємо довжину змійки під час споживання шматка їжі
+
+# Збільшуємо довжину змійки
+# І тут же можна додати перевірку на зіткнення Змійки зі своїм тілом, або зі стіною
 def update_snake(x1, y1, snake_coord_lists):
-    snake_head = [x1, y1]
+    snake_head = (x1, y1)
     snake_coord_lists.append(snake_head)
     return snake_head
 
 # логіка
+# Скорочуємо хвіст Змійки
 def trim_snake_tail(snake_coord_lists, length_of_snake):
     del snake_coord_lists[:-length_of_snake]
+
 
 # графіка
 def msg_lost(msg, color, font_style, dis_width, dis_height, dis):
@@ -247,9 +268,47 @@ def self_collision(snake_coord_lists, snake_head, game_lost_state):
     return game_lost_state
 
 # логіка
-def get_coord_new_food(dis_width, snake_size_link, dis_height):
-    food_x = round(random.randrange(0, dis_width - snake_size_link) / 10.0) * 10.0
-    food_y = round(random.randrange(0, dis_height - snake_size_link) / 10.0) * 10.0
+def get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y):
+    # Зберігаємо усі можливі координати у списку:
+    available_positions = [
+        (x, y) for x in range(0, dis_width, snake_size_link) for y in range(0, dis_height, snake_size_link)
+    ]
+    # Видаляємо з неї усі координати тіла Змійки:
+    # when available_positions is set
+    # available_positions.difference_update(set(snake_coord_lists))
+    
+    # print(f"available_positions before remove = {available_positions}")
+    # print(f"snake_coord_lists before remove = {snake_coord_lists}")
+    # when available_positions is set
+    
+    # if snake_coord_lists in available_positions:
+    #     available_positions.remove(snake_coord_lists)                # when available_positions is list
+    #     # print(f"available_positions after remove = {available_positions}")
+    
+    # Вибираємо нову їжу з решти доступних координат:
+    # food_x, food_y = random.choice(list(available_positions))
+    print(f"available_positions before IF = {len(available_positions)}")
+    if food_x is not None and food_y is not None:
+        if ([food_x, food_y] in available_positions):
+            print(f"available_positions in nested IF, Before Remove = {len(available_positions)}")
+            print(f"[food_x, food_y] in nested IF, Before Remove = {[food_x, food_y]}")
+            available_positions.remove([food_x, food_y])
+            print(f"available_positions in nested IF, After Remove = {len(available_positions)}")
+    if snake_head in available_positions:
+        print(f"available_positions in IF, Before Remove = {len(available_positions)}")
+        print(f"snake_head in nested IF, Before Remove = {snake_head}")
+        available_positions.remove(snake_head)
+    
+    print(f"available_positions, Before Append = {len(available_positions)}")
+    print(f"snake_tail, Before Append = {snake_coord_lists[:-length_of_snake]}")
+    available_positions.append(snake_coord_lists[:-length_of_snake])   # + snake_tail
+    
+    food_x, food_y = random.choice(available_positions)
+    # print(f"food_x = {food_x}")
+    # print(f"food_y = {food_y}")
+    # food_x = round(random.randrange(0, dis_width - snake_size_link) / 10.0) * 10.0
+    # food_y = round(random.randrange(0, dis_height - snake_size_link) / 10.0) * 10.0
+    # return food_x, food_y, available_positions
     return food_x, food_y
 
 
@@ -311,18 +370,40 @@ def game_continuation(event, params, dis, score_font, clock, font_style, dis_wid
 def control_snake_keys(event, key_direction_map, length_of_snake, x1_change, y1_change):
     if event.type == pygame.KEYDOWN and event.key in key_direction_map:
         new_x_change, new_y_change = key_direction_map[event.key]
-
-        if length_of_snake == 1:    # Для змійки довжиною 1 можна змінювати напрямок без обмежень
-            x1_change, y1_change = new_x_change, new_y_change
-        else:                       # Для змійки більше ніж 1 сегмент - перевірка на протилежний напрямок
-            if (x1_change == 0 or x1_change + new_x_change != 0) and (y1_change == 0 or y1_change + new_y_change != 0):
-                x1_change, y1_change = new_x_change, new_y_change
-
+        
+        if length_of_snake == 1 or not(x1_change + new_x_change == 0 and y1_change + new_y_change == 0):
+            return new_x_change, new_y_change
+    
     return x1_change, y1_change
 
+    #     # Old code for def control_snake_keys:
 
+    #     if length_of_snake == 1:    # Для змійки довжиною 1 можна змінювати напрямок без обмежень
+    #         x1_change, y1_change = new_x_change, new_y_change
+    #     else:                       # Для змійки більше ніж 1 сегмент - перевірка на протилежний напрямок
+    #         if (x1_change == 0 or x1_change + new_x_change != 0) and (y1_change == 0 or y1_change + new_y_change != 0):
+    #             x1_change, y1_change = new_x_change, new_y_change
+
+    # return x1_change, y1_change
+
+# логіка
 def check_collision_with_walls(x1, y1, dis_width, dis_height):
     return not(0 <= x1 < dis_width and 0 <= y1 < dis_height)
+
+# логіка
+def update_snake_position(x1, y1, x1_change, y1_change):
+    x1 += x1_change
+    y1 += y1_change
+    return x1, y1
+
+
+# логіка
+# list_coords = [food_x, food_y, snake_size_link, snake_size_link]
+def coords_center_rect(list_coords):
+    food_x, food_y, snake_size_link, snake_size_link = list_coords
+    # print(f"food_x, food_y, snake_size_link, snake_size_link = {food_x}, {food_y}, {snake_size_link}, {snake_size_link}")
+# def draw_food(dis, green, food_x, food_y, snake_size_link):
+#     pygame.draw.rect(dis, green, [food_x, food_y, snake_size_link, snake_size_link])
 
 
 def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
@@ -337,7 +418,11 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
     snake_coord_lists = []
     length_of_snake = 1
 
-    food_x, food_y = get_coord_new_food(dis_width, snake_size_link, dis_height)
+    available_positions = []
+    snake_head = []
+    food_x = food_y = None
+
+    food_x, food_y = get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y)
 
     while not game_over_status:
         while game_lost_state == True:
@@ -358,12 +443,18 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
             x1_change, y1_change = control_snake_keys(event, key_direction_map, length_of_snake, x1_change, y1_change)
 
         # stop = stop_snake()
-        
+        list_coords = [food_x, food_y, snake_size_link, snake_size_link]
+        list_2_coords = coords_center_rect(list_coords)
+        # print(f"list_2_coords = {list_2_coords}")
+        # def coords_center_rect(list_coords):
+        #     food_x, food_y, snake_size_link, snake_size_link = list_coords
+            
         game_lost_state = check_collision_with_walls(x1, y1, dis_width, dis_height)
         # pygame.time.delay(2000)        
         
-        x1 += x1_change
-        y1 += y1_change
+        x1, y1 = update_snake_position(x1, y1, x1_change, y1_change)
+        # x1 += x1_change
+        # y1 += y1_change
         
         # grid_surface = create_grid_surface(dis_width, dis_height, snake_size_link, black, blue)
         draw_grid(dis, grid_surface)
@@ -383,7 +474,7 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
         pygame.display.update()
 
         if x1 == food_x and y1 == food_y:
-            food_x, food_y = get_coord_new_food(dis_width, snake_size_link, dis_height)
+            food_x, food_y = get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y)
             length_of_snake = increm_len_snake(length_of_snake)            
 
         clock.tick(snake_speed)
