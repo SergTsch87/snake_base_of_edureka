@@ -5,6 +5,7 @@ import random
 from config import PARAMS
 import graphic
 import input_handle
+import collisions
 
     # Порада:
     # Створіть окремі файли для логіки гри, рендерингу, обробки подій тощо.
@@ -125,6 +126,23 @@ import input_handle
 #         Повертає координати наступної клітинки для переміщення Змійки
 
 
+# зіткнення
+# collisions.py
+    # self_collision
+    # check_collision_with_walls
+    # stop_snake
+
+#     self_collision
+#         Перевірка на зіткнення Змійки з собою (голови з тулубом)
+
+#     check_collision_with_walls
+#         Перевірка на зіткнення Змійки (її голови) зі стіною
+
+#     stop_snake
+#         Функція зупинки змійки у момент зіткнення.
+#         Ще треба буде її створити
+
+
 
 #     add_head_to_body
 #         Додає нові координати (x1, y1) (і повертає їх) голови Змійки до snake_coord_lists.
@@ -135,16 +153,10 @@ import input_handle
 #     trim_snake_tail
 #         Скорочує хвіст Змійки, - прибирає останній елемент зі списку snake_coord_lists
 
-#     self_collision
-#         Перевірка на зіткнення Змійки з собою (голови з тулубом)
-
 #     get_coord_new_food
 #         Щокроку змінює список available_positions згідно алгоритму, - щоб залишати тіко ті чарунки,
 #         які вільні для створення їжі на них
 #         Повертає int(food_x), int(food_y)
-
-#     check_collision_with_walls
-#         Перевірка на зіткнення Змійки (її голови) зі стіною
 
 #     move_snake_head
 #         Щокроку змінює координати (x1, y1) (і повертає їх) голови Змійки.
@@ -157,10 +169,6 @@ import input_handle
     
 #     increm_len_snake
 #         Збільшуємо довжину Змійки на 1
-
-#     stop_snake
-#         Функція зупинки змійки у момент зіткнення.
-#         Ще треба буде її створити
 
 
 #     game_loop
@@ -335,15 +343,6 @@ def trim_snake_tail(snake_coord_lists, length_of_snake):
 
 
 # логіка
-def self_collision(snake_coord_lists, snake_head, game_lost_state):
-    for x in snake_coord_lists[:-1]:
-        if x == snake_head:
-            game_lost_state = True
-            # print(f"Intro def self_collision():  Is True?..  game_lost_state == {game_lost_state}")
-            # pygame.time.delay(2000)
-    return game_lost_state
-
-# логіка
 def get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y):
     # Зберігаємо усі можливі координати у списку:
     available_positions = [
@@ -397,26 +396,11 @@ def increm_len_snake(length_of_snake):
     return length_of_snake
 
 
-# Функція зупинки змійки у момент зіткнення
-# def stop_snake():
-#     x1_change = y1_change = 0
-#     game_lost_state = True
-#     return True
-
-
-# логіка
-def check_collision_with_walls(x1, y1, dis_width, dis_height):
-    return not(0 <= x1 < dis_width and 0 <= y1 < dis_height)
-
 # логіка
 def move_snake_head(x1, y1, x1_change, y1_change):
     x1 += x1_change
     y1 += y1_change
     return x1, y1
-
-
-# def draw_food(dis, green, food_x, food_y, snake_size_link):
-#     pygame.draw.rect(dis, green, [food_x, food_y, snake_size_link, snake_size_link])
 
 
 def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
@@ -455,7 +439,7 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
         graphic.draw_grid(dis, grid_surface)
         
         # list_coords = [food_x, food_y, snake_size_link, snake_size_link]            
-        game_lost_state = check_collision_with_walls(x1, y1, dis_width, dis_height)
+        game_lost_state = collisions.check_collision_with_walls(x1, y1, dis_width, dis_height)
 
         graphic.draw_food(dis, green, food_x, food_y, snake_size_link)
         snake_head = add_head_to_body(x1, y1, snake_coord_lists)  # ???
@@ -524,7 +508,7 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
         # score = length_of_snake - 1 # to change!
         # # display_info(score, snake_speed, score_font, yellow, dis) # Потім розкоментуй !
         
-        game_lost_state = self_collision(snake_coord_lists, snake_head, game_lost_state)
+        game_lost_state = collisions.self_collision(snake_coord_lists, snake_head, game_lost_state)
 
         if x1 == food_x and y1 == food_y:
             food_x, food_y = get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y)
