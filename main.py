@@ -6,6 +6,14 @@ from config import PARAMS
 import graphic
 import input_handle
 import collisions
+import move
+
+# Змійка кілька разів ковтає їжу, поступово зростає, і все добре.
+# Аж ось, десь на 7-10-му кроці, щойно вона ковтнула черговий шматок їжі (і нікуди не врізалась!), - гра тут же завершується з помилкою:
+#                                                                         line 385, in get_coord_new_food
+#     food_x, food_y = random.choice(available_positions)
+#     ^^^^^^^^^^^^^^
+# ValueError: not enough values to unpack (expected 2, got 0)
 
     # Порада:
     # Створіть окремі файли для логіки гри, рендерингу, обробки подій тощо.
@@ -98,6 +106,11 @@ import collisions
 #     draw_grid
 #         Просто блітимо вже намальований grid_surface на екран
 
+#     coords_center_rect
+#         Буде використовуватись для повернення координат центру прямокутника, -
+#         для полегшення переходу до іншої системи координат
+
+
 
 # +
 # обробка вводу
@@ -126,6 +139,7 @@ import collisions
 #         Повертає координати наступної клітинки для переміщення Змійки
 
 
+# +
 # зіткнення
 # collisions.py
     # self_collision
@@ -143,6 +157,12 @@ import collisions
 #         Ще треба буде її створити
 
 
+# рух Змійки
+# move.py
+    # add_head_to_body
+    # trim_snake_tail
+    # move_snake_head
+    # increm_len_snake
 
 #     add_head_to_body
 #         Додає нові координати (x1, y1) (і повертає їх) голови Змійки до snake_coord_lists.
@@ -153,22 +173,22 @@ import collisions
 #     trim_snake_tail
 #         Скорочує хвіст Змійки, - прибирає останній елемент зі списку snake_coord_lists
 
-#     get_coord_new_food
-#         Щокроку змінює список available_positions згідно алгоритму, - щоб залишати тіко ті чарунки,
-#         які вільні для створення їжі на них
-#         Повертає int(food_x), int(food_y)
-
 #     move_snake_head
 #         Щокроку змінює координати (x1, y1) (і повертає їх) голови Змійки.
 #         На кожному наступному кроці, вони стають координатами нового поля,
 #         на яке перемістилась голова Змійки
 
-#     coords_center_rect
-#         Буде використовуватись для повернення координат центру прямокутника, -
-#         для полегшення переходу до іншої системи координат
-    
 #     increm_len_snake
 #         Збільшуємо довжину Змійки на 1
+
+
+# Їжа
+# food.py
+#     get_coord_new_food
+#         Щокроку змінює список available_positions згідно алгоритму, - щоб залишати тіко ті чарунки,
+#         які вільні для створення їжі на них
+#         Повертає int(food_x), int(food_y)
+
 
 
 #     game_loop
@@ -177,8 +197,6 @@ import collisions
 
 
 
-# рух Змійки
-# зіткнення
 
 # стани гри
 
@@ -327,19 +345,19 @@ import collisions
     # 7) Використати ООП
 
 
-# Змінюємо довжину змійки під час споживання шматка їжі
-# Збільшуємо довжину змійки
-# І тут же можна додати перевірку на зіткнення Змійки зі своїм тілом, або зі стіною
-# логіка
-def add_head_to_body(x1, y1, snake_coord_lists):
-    snake_head = (int(x1), int(y1))
-    snake_coord_lists.append(snake_head)
-    return snake_head
+    # # Змінюємо довжину змійки під час споживання шматка їжі
+    # # Збільшуємо довжину змійки
+    # # І тут же можна додати перевірку на зіткнення Змійки зі своїм тілом, або зі стіною
+    # # логіка
+    # def add_head_to_body(x1, y1, snake_coord_lists):
+    #     snake_head = (int(x1), int(y1))
+    #     snake_coord_lists.append(snake_head)
+    #     return snake_head
 
-# Скорочуємо хвіст Змійки
-# логіка
-def trim_snake_tail(snake_coord_lists, length_of_snake):
-    del snake_coord_lists[:-length_of_snake]
+    # # Скорочуємо хвіст Змійки
+    # # логіка
+    # def trim_snake_tail(snake_coord_lists, length_of_snake):
+    #     del snake_coord_lists[:-length_of_snake]
 
 
 # логіка
@@ -379,10 +397,14 @@ def get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists
     
     # !!!
     # У коді ви додаєте всі координати хвоста до available_positions через:
+    print(f"Before:   len(available_positions) == {len(available_positions)}")
     available_positions.append(snake_coord_lists[:-length_of_snake])   # + snake_tail
+    print(f"After:   len(available_positions) == {len(available_positions)}")
     # Це може призвести до непередбачуваних результатів, оскільки ви додаєте список всередину списку доступних позицій. Правильніше було б додавати окремі координати
     
+    print(f"Before: (food_x, food_y) == ({food_x}, {food_y})")
     food_x, food_y = random.choice(available_positions)
+    print(f"After: (food_x, food_y) == ({food_x}, {food_y})")
     # print(f"food_x = {food_x}")
     # print(f"food_y = {food_y}")
     # food_x = round(random.randrange(0, dis_width - snake_size_link) / 10.0) * 10.0
@@ -391,16 +413,16 @@ def get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists
     return int(food_x), int(food_y)
 
 
-def increm_len_snake(length_of_snake):
-    length_of_snake += 1
-    return length_of_snake
+    # def increm_len_snake(length_of_snake):
+    #     length_of_snake += 1
+    #     return length_of_snake
 
 
-# логіка
-def move_snake_head(x1, y1, x1_change, y1_change):
-    x1 += x1_change
-    y1 += y1_change
-    return x1, y1
+    # # логіка
+    # def move_snake_head(x1, y1, x1_change, y1_change):
+    #     x1 += x1_change
+    #     y1 += y1_change
+    #     return x1, y1
 
 
 def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
@@ -442,7 +464,7 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
         game_lost_state = collisions.check_collision_with_walls(x1, y1, dis_width, dis_height)
 
         graphic.draw_food(dis, green, food_x, food_y, snake_size_link)
-        snake_head = add_head_to_body(x1, y1, snake_coord_lists)  # ???
+        snake_head = move.add_head_to_body(x1, y1, snake_coord_lists)  # ???
         # eat_count += 1
         # print(f"eat_count == {eat_count}")
 
@@ -488,13 +510,13 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
                 # print(f"else: ... elif length_of_snake > 1:")
                 # print(f"eat_count == {eat_count}")
             
-            trim_snake_tail(snake_coord_lists, length_of_snake)
+            move.trim_snake_tail(snake_coord_lists, length_of_snake)
         
         # move_snake()
         # print(f"length_of_snake == {length_of_snake}")
         # print(f"length of available_positions == {len(available_positions)}")
         
-        x1, y1 = move_snake_head(x1, y1, x1_change, y1_change)
+        x1, y1 = move.move_snake_head(x1, y1, x1_change, y1_change)
         # snake_head = add_head_to_body(x1, y1, snake_coord_lists)
 
         # if snake_head in available_positions:
@@ -512,7 +534,7 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
 
         if x1 == food_x and y1 == food_y:
             food_x, food_y = get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y)
-            length_of_snake = increm_len_snake(length_of_snake)            
+            length_of_snake = move.increm_len_snake(length_of_snake)
 
         clock.tick(snake_speed)
     
