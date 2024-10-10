@@ -4,6 +4,7 @@ import time
 import random
 from config import PARAMS
 import graphic
+import input_handle
 
     # Порада:
     # Створіть окремі файли для логіки гри, рендерингу, обробки подій тощо.
@@ -46,12 +47,36 @@ import graphic
 
 
 # Пояснення до функцій:
+
+
+# +
+# Ініціація
+    # config.py
+    # from config import PARAMS
+
+# +
+# графіка
+# інформативність
+    # graphic.py
+    # import graphic
+        # create_grid_surface
+        # draw_grid
+        # snake_score
+        # display_info
+        # draw_snake
+        # draw_food
+        # msg_lost
+        # gameover_anim
+        # fade_to_black
+        # coords_center_rect
+
 #     create_grid_surface
 #         Використання pygame.Surface для збереження сітки ігрового поля
 #         Це зменшить кількість малювань і збільшить продуктивність.
 
 #     snake_score
 #         Показує на ігровому полі к-сть балів
+
 #     display_info
 #         Показує на ігровому полі к-сть балів та швидкість Змійки
     
@@ -68,7 +93,38 @@ import graphic
 #     fade_to_black
 #         Функції завершення гри.
 #         Кожна з них має цикл for, та часові павзи: time.sleep та time.delay
-    
+
+#     draw_grid
+#         Просто блітимо вже намальований grid_surface на екран
+
+
+# +
+# обробка вводу
+# input_handle.py
+#     process_endgame_input
+#     gameover_logic
+#     game_continuation
+#     control_snake_keys
+
+#     process_endgame_input
+#         Завершує / Призупиняє гру, повертаючи game_over_status, game_lost_state
+#         Всередині себе має виклики функцій:
+#             gameover_logic
+#             game_continuation
+
+#     gameover_logic
+#         Обробляє натискання клавіші "q", (щоб потім, за цією клавішею, завершилась гра)
+#         повертає game_over_status, game_lost_state
+
+#     game_continuation
+#         Обробляє натискання клавіші "c",  (щоб потім, за цією клавішею, поновилась гра)
+#         Рекурсивно(!) запускає game_loop()...
+
+#     control_snake_keys
+#         Обробляє натискання клавіш-стрілок.
+#         Повертає координати наступної клітинки для переміщення Змійки
+
+
 
 #     add_head_to_body
 #         Додає нові координати (x1, y1) (і повертає їх) голови Змійки до snake_coord_lists.
@@ -106,34 +162,12 @@ import graphic
 #         Функція зупинки змійки у момент зіткнення.
 #         Ще треба буде її створити
 
-#     process_endgame_input
-#         Завершує / Призупиняє гру, повертаючи game_over_status, game_lost_state
-#         Всередині себе має виклики функцій:
-#             gameover_logic
-#             game_continuation
-
-#     gameover_logic
-#         Обробляє натискання клавіші "q", (щоб потім, за цією клавішею, завершилась гра)
-#         повертає game_over_status, game_lost_state
-
-#     game_continuation
-#         Обробляє натискання клавіші "c",  (щоб потім, за цією клавішею, поновилась гра)
-#         Рекурсивно(!) запускає game_loop()...
-
-#     control_snake_keys
-#         Обробляє натискання клавіш-стрілок.
-#         Повертає координати наступної клітинки для переміщення Змійки
 
 #     game_loop
 #         Фактично, містить в собі усю гру (без деяких ініціацій)
 
 
-# ініціація
 
-# графіка
-# інформативність
-
-# обробка вводу
 
 # рух Змійки
 # зіткнення
@@ -370,47 +404,6 @@ def increm_len_snake(length_of_snake):
 #     return True
 
 
-def process_endgame_input(dis, score_font, clock, font_style, dis_width, dis_height, game_over_status, game_lost_state):
-    for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
-            game_over_status, game_lost_state = gameover_logic(event, game_over_status, game_lost_state, dis)
-            game_continuation(event, dis, score_font, clock, font_style, dis_width, dis_height)
-    return game_over_status, game_lost_state
-
-def gameover_logic(event, game_over_status, game_lost_state, dis):
-    if event.key == pygame.K_q:
-        game_over_status = True
-        game_lost_state = False
-        # pygame.time.delay(2000)
-        # gameover_anim(dis, colors)
-        graphic.fade_to_black(dis)
-    return game_over_status, game_lost_state
-
-
-def game_continuation(event, dis, score_font, clock, font_style, dis_width, dis_height):
-    if event.key == pygame.K_c:
-        game_loop(dis, score_font, clock, font_style, dis_width, dis_height)
-
-
-def control_snake_keys(event, key_direction_map, length_of_snake, x1_change, y1_change):
-    if event.type == pygame.KEYDOWN and event.key in key_direction_map:
-        new_x_change, new_y_change = key_direction_map[event.key]
-        
-        if length_of_snake == 1 or not(x1_change + new_x_change == 0 and y1_change + new_y_change == 0):
-            return new_x_change, new_y_change
-    
-    return x1_change, y1_change
-
-    #     # Old code for def control_snake_keys:
-
-    #     if length_of_snake == 1:    # Для змійки довжиною 1 можна змінювати напрямок без обмежень
-    #         x1_change, y1_change = new_x_change, new_y_change
-    #     else:                       # Для змійки більше ніж 1 сегмент - перевірка на протилежний напрямок
-    #         if (x1_change == 0 or x1_change + new_x_change != 0) and (y1_change == 0 or y1_change + new_y_change != 0):
-    #             x1_change, y1_change = new_x_change, new_y_change
-
-    # return x1_change, y1_change
-
 # логіка
 def check_collision_with_walls(x1, y1, dis_width, dis_height):
     return not(0 <= x1 < dis_width and 0 <= y1 < dis_height)
@@ -449,14 +442,14 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
             dis.fill(blue)
             graphic.msg_lost("You Lost! Press Q-Quit or C-Play Again", red, font_style, dis_width, dis_height, dis)
             pygame.display.update()
-            game_over_status, game_lost_state = process_endgame_input(dis, score_font, clock, font_style, dis_width, dis_height, game_over_status, game_lost_state)
+            game_over_status, game_lost_state = input_handle.process_endgame_input(dis, score_font, clock, font_style, dis_width, dis_height, game_over_status, game_lost_state)
                     
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over_status = True
                 graphic.fade_to_black(dis)
 
-            x1_change, y1_change = control_snake_keys(event, key_direction_map, length_of_snake, x1_change, y1_change)
+            x1_change, y1_change = input_handle.control_snake_keys(event, key_direction_map, length_of_snake, x1_change, y1_change)
 
         # grid_surface = create_grid_surface(dis_width, dis_height, snake_size_link, black, blue)
         graphic.draw_grid(dis, grid_surface)
