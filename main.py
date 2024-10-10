@@ -7,6 +7,7 @@ import graphic
 import input_handle
 import collisions
 import move
+import food
 
 # Змійка кілька разів ковтає їжу, поступово зростає, і все добре.
 # Аж ось, десь на 7-10-му кроці, щойно вона ковтнула черговий шматок їжі (і нікуди не врізалась!), - гра тут же завершується з помилкою:
@@ -441,7 +442,7 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
 
     eat_count = 0
 
-    food_x, food_y = get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y)
+    food_x, food_y = food.get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y)
 
     while not game_over_status:
         while game_lost_state == True:
@@ -533,7 +534,7 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
         game_lost_state = collisions.self_collision(snake_coord_lists, snake_head, game_lost_state)
 
         if x1 == food_x and y1 == food_y:
-            food_x, food_y = get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y)
+            food_x, food_y = food.get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y)
             length_of_snake = move.increm_len_snake(length_of_snake)
 
         clock.tick(snake_speed)
