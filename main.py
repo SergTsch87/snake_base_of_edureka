@@ -3,6 +3,150 @@ import pygame
 import time
 import random
 import config
+import graphic
+
+    # Порада:
+    # Створіть окремі файли для логіки гри, рендерингу, обробки подій тощо.
+# Спершу розділи функції за групами, а ті - розкинь по відповідним файлам.
+# Тоді у головному файлі буде менше коду, - відповідно, стане легше та швидше працювати з кодом
+
+# Функції, які потребують об'єднання:
+#     init_params_for_game_loop()
+#     init_params_for_main()
+
+#     snake_score
+#     display_info
+
+# Перевір, або об'єднай їх!
+    # update_snake
+    # update_snake_position
+
+
+# Функції з розділу "Графіка":
+#     create_grid_surface
+#     snake_score
+#     display_info
+#     draw_snake
+#     draw_food
+#     msg_lost
+#     gameover_anim
+#     fade_to_black
+
+# Функції з розділу "Логіка":
+#     update_snake
+#     trim_snake_tail
+#     self_collision
+#     get_coord_new_food
+#     check_collision_with_walls
+#     update_snake_position
+#     coords_center_rect
+
+
+# Пояснення до функцій:
+#     create_grid_surface
+#         Використання pygame.Surface для збереження сітки ігрового поля
+#         Це зменшить кількість малювань і збільшить продуктивність.
+
+#     snake_score
+#         Показує на ігровому полі к-сть балів
+#     display_info
+#         Показує на ігровому полі к-сть балів та швидкість Змійки
+    
+#     draw_snake
+#         Малює Змійку, дістаючи координати кожного її елемента
+
+#     draw_food
+#         Малює квадратик їжі за заданими координатами (food_x, food_y)
+
+#     msg_lost
+#         Відображає повідомлення наприкінці гри
+
+#     gameover_anim
+#     fade_to_black
+#         Функції завершення гри.
+#         Кожна з них має цикл for, та часові павзи: time.sleep та time.delay
+    
+
+#     update_snake
+#         Додає нові координати (x1, y1) (і повертає їх) голови Змійки до snake_coord_lists.
+#         Спершу то координати центру поля.
+#         А в процесі руху Змійки, на кожному наступному кроці, вони стають координатами нового поля,
+#         на яке перемістилась голова Змійки
+
+#     trim_snake_tail
+#         Скорочує хвіст Змійки, - прибирає останній елемент зі списку snake_coord_lists
+
+#     self_collision
+#         Перевірка на зіткнення Змійки з собою (голови з тулубом)
+
+#     get_coord_new_food
+#         Щокроку змінює список available_positions згідно алгоритму, - щоб залишати тіко ті чарунки,
+#         які вільні для створення їжі на них
+#         Повертає int(food_x), int(food_y)
+
+#     check_collision_with_walls
+#         Перевірка на зіткнення Змійки (її голови) зі стіною
+
+#     update_snake_position
+#         Щокроку змінює координати (x1, y1) (і повертає їх) голови Змійки.
+#         На кожному наступному кроці, вони стають координатами нового поля,
+#         на яке перемістилась голова Змійки
+
+#     coords_center_rect
+#         Буде використовуватись для повернення координат центру прямокутника, -
+#         для полегшення переходу до іншої системи координат
+    
+#     increm_len_snake
+#         Збільшуємо довжину Змійки на 1
+
+#     stop_snake
+#         Функція зупинки змійки у момент зіткнення.
+#         Ще треба буде її створити
+
+#     process_endgame_input
+#         Завершує / Призупиняє гру, повертаючи game_over_status, game_lost_state
+#         Всередині себе має виклики функцій:
+#             gameover_logic
+#             game_continuation
+
+#     gameover_logic
+#         Обробляє натискання клавіші "q", (щоб потім, за цією клавішею, завершилась гра)
+#         повертає game_over_status, game_lost_state
+
+#     game_continuation
+#         Обробляє натискання клавіші "c",  (щоб потім, за цією клавішею, поновилась гра)
+#         Рекурсивно(!) запускає game_loop()...
+
+#     control_snake_keys
+#         Обробляє натискання клавіш-стрілок.
+#         Повертає координати наступної клітинки для переміщення Змійки
+
+#     game_loop
+#         Фактично, містить в собі усю гру (без деяких ініціацій)
+
+
+
+# # Які функції виконують більше, ніж одну задачу:
+#     game_loop
+#         Фактично, містить в собі усю гру (без деяких ініціацій)
+
+
+# # Які функції потребують оптимізації:
+# #     create_grid_surface
+# #         Містить два цикли for, - чи можна якось оптимізувати їх?..
+
+#     game_loop
+#         Фактично, містить в собі усю гру (без деяких ініціацій)
+
+
+# !!!
+# Всередині функції game_loop відбувається рекурсивний виклик:
+#     process_endgame_input() -> game_continuation() -> game_loop()
+# Треба замінити рекурсію на цикл, - задля збереження ресурсів програми та машини
+
+# Приведи до ладу функцію get_coord_new_food!..
+    # Бо, наразі, я не використовую змінну available_positions,
+    # яка створюється саме у цій функції, і більше нікуди не передається...
 
 # Напрямки:
 # (1, 0)
@@ -179,8 +323,15 @@ def init_params_for_main():
         # "dis_width": 800,
         # "dis_height": 600,
     # Для прототипу:
-    params_for_main["dis_width"] = 200
-    params_for_main["dis_height"] = 200
+    params_for_main["dis_width"] = 300
+    params_for_main["dis_height"] = 300
+
+    # !!!
+    # Якщо прибрати кому наприкінці, - тоді буде помилка:
+    #     snake_base_of_edureka\main.py", line 619, in main
+    #     clock, font_style, score_font, dis_width, dis_height, dis = params_main["clock"], params_main["font_style"], params_main["score_font"], params_main["dis_width"], params_main["dis_height"], params_main["dis"][0]
+    #     TypeError: 'pygame.surface.Surface' object is not subscriptable
+    # А з комою - працює якось і чомусь...
     params_for_main["dis"] =  pygame.display.set_mode((params_for_main["dis_width"], params_for_main["dis_height"])),
 
     pygame.display.set_caption("Змійка")
@@ -192,72 +343,20 @@ def init_params_for_main():
     return params_for_main
 
 
-# Використання pygame.Surface для збереження сітки ігрового поля
-# Це зменшить кількість малювань і збільшить продуктивність.
-# графіка
-def create_grid_surface(dis_width, dis_height, snake_size_link, black, blue):
-    # Створюємо новий Surface з потрібними розмірами
-    grid_surface = pygame.Surface((dis_width, dis_height))
-    grid_surface.fill(blue)
-
-    for x in range(0, dis_width, snake_size_link):
-        pygame.draw.line(grid_surface, black, (x, 0), (x, dis_height))
-    for y in range(0, dis_height, snake_size_link):
-        pygame.draw.line(grid_surface, black, (0, y), (dis_width, y))
-
-    return grid_surface
-
-
-def draw_grid(dis, grid_surface):
-    # Просто блітимо вже намальований grid_surface на екран
-    dis.blit(grid_surface, (0, 0))
-
-# --------------------------------------------------------
-# Об'єднай ці дві функції в одну
-
-# графіка
-def snake_score(score, score_font, color, dis):
-    value = score_font.render("Your score: " + str(score), True, color)
-    dis.blit(value, [0, 0])
-
-
-def display_info(score, speed, score_font, color, dis):
-    score_text = score_font.render("Score: " + str(score), True, color)
-    speed_text = score_font.render("Speed: " + str(speed), True, color)
-    dis.blit(score_text, [0, 0])
-    dis.blit(speed_text, [0, 30])
-# --------------------------------------------------------
-
-# графіка
-def draw_snake(snake_size_link, snake_coord_lists, dis, black):
-    for xy_coord_link in snake_coord_lists:
-        pygame.draw.rect(dis, black, [xy_coord_link[0], xy_coord_link[1], snake_size_link, snake_size_link])
-
-# графіка
-def draw_food(dis, green, food_x, food_y, snake_size_link):
-    pygame.draw.rect(dis, green, [food_x, food_y, snake_size_link, snake_size_link])
-
-
-# логіка
 # Змінюємо довжину змійки під час споживання шматка їжі
-
 # Збільшуємо довжину змійки
 # І тут же можна додати перевірку на зіткнення Змійки зі своїм тілом, або зі стіною
+# логіка
 def update_snake(x1, y1, snake_coord_lists):
-    snake_head = (x1, y1)
+    snake_head = (int(x1), int(y1))
     snake_coord_lists.append(snake_head)
     return snake_head
 
-# логіка
 # Скорочуємо хвіст Змійки
+# логіка
 def trim_snake_tail(snake_coord_lists, length_of_snake):
     del snake_coord_lists[:-length_of_snake]
 
-
-# графіка
-def msg_lost(msg, color, font_style, dis_width, dis_height, dis):
-    mesg = font_style.render(msg, True, color)
-    dis.blit(mesg, [dis_width/6, dis_height/3])
 
 # логіка
 def self_collision(snake_coord_lists, snake_head, game_lost_state):
@@ -287,21 +386,25 @@ def get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists
     
     # Вибираємо нову їжу з решти доступних координат:
     # food_x, food_y = random.choice(list(available_positions))
-    print(f"available_positions before IF = {len(available_positions)}")
+    # print(f"available_positions before IF = {len(available_positions)}")
     if food_x is not None and food_y is not None:
         if ([food_x, food_y] in available_positions):
-            print(f"available_positions in nested IF, Before Remove = {len(available_positions)}")
-            print(f"[food_x, food_y] in nested IF, Before Remove = {[food_x, food_y]}")
+            # print(f"available_positions in nested IF, Before Remove = {len(available_positions)}")
+            # print(f"[food_x, food_y] in nested IF, Before Remove = {[food_x, food_y]}")
             available_positions.remove([food_x, food_y])
-            print(f"available_positions in nested IF, After Remove = {len(available_positions)}")
+            # print(f"available_positions in nested IF, After Remove = {len(available_positions)}")
     if snake_head in available_positions:
-        print(f"available_positions in IF, Before Remove = {len(available_positions)}")
-        print(f"snake_head in nested IF, Before Remove = {snake_head}")
+        # print(f"available_positions in IF, Before Remove = {len(available_positions)}")
+        # print(f"snake_head in nested IF, Before Remove = {snake_head}")
         available_positions.remove(snake_head)
     
-    print(f"available_positions, Before Append = {len(available_positions)}")
-    print(f"snake_tail, Before Append = {snake_coord_lists[:-length_of_snake]}")
+    # print(f"available_positions, Before Append = {len(available_positions)}")
+    # print(f"snake_tail, Before Append = {snake_coord_lists[:-length_of_snake]}")
+    
+    # !!!
+    # У коді ви додаєте всі координати хвоста до available_positions через:
     available_positions.append(snake_coord_lists[:-length_of_snake])   # + snake_tail
+    # Це може призвести до непередбачуваних результатів, оскільки ви додаєте список всередину списку доступних позицій. Правильніше було б додавати окремі координати
     
     food_x, food_y = random.choice(available_positions)
     # print(f"food_x = {food_x}")
@@ -309,7 +412,7 @@ def get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists
     # food_x = round(random.randrange(0, dis_width - snake_size_link) / 10.0) * 10.0
     # food_y = round(random.randrange(0, dis_height - snake_size_link) / 10.0) * 10.0
     # return food_x, food_y, available_positions
-    return food_x, food_y
+    return int(food_x), int(food_y)
 
 
 def increm_len_snake(length_of_snake):
@@ -323,27 +426,6 @@ def increm_len_snake(length_of_snake):
 #     game_lost_state = True
 #     return True
 
-# -------------------------------------
-# графіка
-# Функції завершення гри
-
-def gameover_anim(dis, colors):
-    for color in colors:
-        dis.fill(color)
-        pygame.display.update()
-        time.sleep(0.5)
-
-# графіка
-def fade_to_black(dis):
-    fade_surface = pygame.Surface(dis.get_size())
-    fade_surface.fill((0, 0, 0))
-
-    for alpha in range(0, 300, 5):
-        fade_surface.set_alpha(alpha)
-        dis.blit(fade_surface, (0, 0))
-        pygame.display.update()
-        # pygame.time.delay(50)
-# -------------------------------------
 
 def process_endgame_input(params, dis, score_font, clock, font_style, dis_width, dis_height, game_over_status, game_lost_state):
     for event in pygame.event.get():
@@ -358,7 +440,7 @@ def gameover_logic(event, game_over_status, game_lost_state, dis):
         game_lost_state = False
         # pygame.time.delay(2000)
         # gameover_anim(dis, colors)
-        fade_to_black(dis)
+        graphic.fade_to_black(dis)
     return game_over_status, game_lost_state
 
 
@@ -397,8 +479,8 @@ def update_snake_position(x1, y1, x1_change, y1_change):
     return x1, y1
 
 
-# логіка
 # list_coords = [food_x, food_y, snake_size_link, snake_size_link]
+# логіка
 def coords_center_rect(list_coords):
     food_x, food_y, snake_size_link, snake_size_link = list_coords
     # print(f"food_x, food_y, snake_size_link, snake_size_link = {food_x}, {food_y}, {snake_size_link}, {snake_size_link}")
@@ -407,71 +489,113 @@ def coords_center_rect(list_coords):
 
 
 def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
+
     params = init_params_for_game_loop()
     black, red, blue, yellow, green, colors, snake_size_link, snake_speed, last_key_pressed, game_over_status, game_lost_state, x1_change, y1_change, snake_coord_lists, length_of_snake, key_direction_map = params["black"], params["red"], params["blue"], params["yellow"], params["green"], params["colors"], params["snake_size_link"], params["snake_speed"], params["last_key_pressed"], params["game_over_status"], params["game_lost_state"], params["x1_change"], params["y1_change"], params["snake_coord_lists"], params["length_of_snake"], params["key_direction_map"]
-    grid_surface = create_grid_surface(dis_width, dis_height, snake_size_link, black, blue)
-    
+    grid_surface = graphic.create_grid_surface(dis_width, dis_height, snake_size_link, black, blue)
 
-    x1 = dis_width / 2
-    y1 = dis_height / 2
+    x1 = int(dis_width / 2)
+    y1 = int(dis_height / 2)
 
     snake_coord_lists = []
     length_of_snake = 1
 
-    available_positions = []
+    # available_positions = []
     snake_head = []
     food_x = food_y = None
+
+    eat_count = 0
 
     food_x, food_y = get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y)
 
     while not game_over_status:
         while game_lost_state == True:
             dis.fill(blue)
-            msg_lost("You Lost! Press Q-Quit or C-Play Again", red, font_style, dis_width, dis_height, dis)
-            # snake_score(length_of_snake - 1, score_font, yellow, dis)
+            graphic.msg_lost("You Lost! Press Q-Quit or C-Play Again", red, font_style, dis_width, dis_height, dis)
             pygame.display.update()
-
             game_over_status, game_lost_state = process_endgame_input(params, dis, score_font, clock, font_style, dis_width, dis_height, game_over_status, game_lost_state)
                     
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over_status = True
-                # pygame.time.delay(2000)
-                # gameover_anim(dis, colors)
-                fade_to_black(dis)
+                graphic.fade_to_black(dis)
 
             x1_change, y1_change = control_snake_keys(event, key_direction_map, length_of_snake, x1_change, y1_change)
 
-        # stop = stop_snake()
-        list_coords = [food_x, food_y, snake_size_link, snake_size_link]
-        list_2_coords = coords_center_rect(list_coords)
-        # print(f"list_2_coords = {list_2_coords}")
-        # def coords_center_rect(list_coords):
-        #     food_x, food_y, snake_size_link, snake_size_link = list_coords
-            
+        # grid_surface = create_grid_surface(dis_width, dis_height, snake_size_link, black, blue)
+        graphic.draw_grid(dis, grid_surface)
+        
+        # list_coords = [food_x, food_y, snake_size_link, snake_size_link]            
         game_lost_state = check_collision_with_walls(x1, y1, dis_width, dis_height)
-        # pygame.time.delay(2000)        
+
+        graphic.draw_food(dis, green, food_x, food_y, snake_size_link)
+        snake_head = update_snake(x1, y1, snake_coord_lists)  # ???
+        # eat_count += 1
+        # print(f"eat_count == {eat_count}")
+
+        
+        # draw_snake(snake_size_link, snake_coord_lists, dis, black)
+        # print(f"list(snake_head) before = {list(snake_head)}")
+        # print(f"[food_x, food_y] before = {[food_x, food_y]}")
+        # print(f"eat_count before = {eat_count}")
+
+        # print(f"list(snake_head) == [food_x, food_y] == {list(snake_head) == [food_x, food_y]}")
+
+        # !!!
+        # Некоректна перевірка зіткнення з їжею:
+        # Порівняння координат змійки і їжі за допомогою if list(snake_head) == [food_x, food_y]
+        # може бути ризикованим. Якщо є зміщення навіть на один піксель (наприклад, через нецілісні числа),
+        # змійка може не з'їдати їжу. Краще використовувати точні координати або враховувати розмір змійки
+        # та їжі при перевірці.
+        if list(snake_head) == [food_x, food_y]:
+            
+            # print(f"list(snake_head) before = {list(snake_head)}")
+            # print(f"[food_x, food_y] before = {[food_x, food_y]}")
+            # print(f"eat_count before = {eat_count}")
+
+            snake_coord_lists.append(list(snake_head))
+            eat_count += 1
+
+            # print(f"list(snake_head) after = {list(snake_head)}")
+            # print(f"[food_x, food_y] after = {[food_x, food_y]}")
+            # print(f"eat_count after = {eat_count}")
+            print(f"Eat!)\neat_count == {eat_count}")
+        else:
+            # if length_of_snake == 1:
+            #     available_positions.append(list(snake_head))
+
+                # print(f"length_of_snake == {length_of_snake}")
+                # print(f"else: ... if length_of_snake == 1:")
+                # print(f"eat_count == {eat_count}")
+            
+            # elif length_of_snake > 1:
+            #     available_positions.append(snake_coord_lists[:-length_of_snake])
+            
+                # print(f"length_of_snake == {length_of_snake}")
+                # print(f"else: ... elif length_of_snake > 1:")
+                # print(f"eat_count == {eat_count}")
+            
+            trim_snake_tail(snake_coord_lists, length_of_snake)
+        
+        # move_snake()
+        # print(f"length_of_snake == {length_of_snake}")
+        # print(f"length of available_positions == {len(available_positions)}")
         
         x1, y1 = update_snake_position(x1, y1, x1_change, y1_change)
-        # x1 += x1_change
-        # y1 += y1_change
-        
-        # grid_surface = create_grid_surface(dis_width, dis_height, snake_size_link, black, blue)
-        draw_grid(dis, grid_surface)
-        
-        score = length_of_snake - 1 # to change!
-        # display_info(score, snake_speed, score_font, yellow, dis) # Потім розкоментуй !
-        
-        draw_food(dis, green, food_x, food_y, snake_size_link)
-        snake_head = update_snake(x1, y1, snake_coord_lists)
-        
-        trim_snake_tail(snake_coord_lists, length_of_snake)
+        # snake_head = update_snake(x1, y1, snake_coord_lists)
 
-        game_lost_state = self_collision(snake_coord_lists, snake_head, game_lost_state)
-
-        draw_snake(snake_size_link, snake_coord_lists, dis, black)
+        # if snake_head in available_positions:
+        #     # print(f"snake_head in available_positions")
+        #     available_positions.remove(snake_head)
         
+        graphic.draw_snake(snake_size_link, snake_coord_lists, dis, black)
         pygame.display.update()
+        
+
+        # score = length_of_snake - 1 # to change!
+        # # display_info(score, snake_speed, score_font, yellow, dis) # Потім розкоментуй !
+        
+        # game_lost_state = self_collision(snake_coord_lists, snake_head, game_lost_state)
 
         if x1 == food_x and y1 == food_y:
             food_x, food_y = get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y)
@@ -483,13 +607,92 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
     quit()
 
 
+
+    # params = init_params_for_game_loop()
+    # black, red, blue, yellow, green, colors, snake_size_link, snake_speed, last_key_pressed, game_over_status, game_lost_state, x1_change, y1_change, snake_coord_lists, length_of_snake, key_direction_map = params["black"], params["red"], params["blue"], params["yellow"], params["green"], params["colors"], params["snake_size_link"], params["snake_speed"], params["last_key_pressed"], params["game_over_status"], params["game_lost_state"], params["x1_change"], params["y1_change"], params["snake_coord_lists"], params["length_of_snake"], params["key_direction_map"]
+    # grid_surface = create_grid_surface(dis_width, dis_height, snake_size_link, black, blue)
+    
+
+    # x1 = dis_width / 2
+    # y1 = dis_height / 2
+
+    # snake_coord_lists = []
+    # length_of_snake = 1
+
+    # available_positions = []
+    # snake_head = []
+    # food_x = food_y = None
+
+    # food_x, food_y = get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y)
+
+    # while not game_over_status:
+    #     while game_lost_state == True:
+    #         dis.fill(blue)
+    #         msg_lost("You Lost! Press Q-Quit or C-Play Again", red, font_style, dis_width, dis_height, dis)
+    #         # snake_score(length_of_snake - 1, score_font, yellow, dis)
+    #         pygame.display.update()
+
+    #         game_over_status, game_lost_state = process_endgame_input(params, dis, score_font, clock, font_style, dis_width, dis_height, game_over_status, game_lost_state)
+                    
+    #     for event in pygame.event.get():
+    #         if event.type == pygame.QUIT:
+    #             game_over_status = True
+    #             # pygame.time.delay(2000)
+    #             # gameover_anim(dis, colors)
+    #             fade_to_black(dis)
+
+    #         x1_change, y1_change = control_snake_keys(event, key_direction_map, length_of_snake, x1_change, y1_change)
+
+    #     # stop = stop_snake()
+    #     list_coords = [food_x, food_y, snake_size_link, snake_size_link]
+    #     list_2_coords = coords_center_rect(list_coords)
+    #     # print(f"list_2_coords = {list_2_coords}")
+    #     # def coords_center_rect(list_coords):
+    #     #     food_x, food_y, snake_size_link, snake_size_link = list_coords
+            
+    #     game_lost_state = check_collision_with_walls(x1, y1, dis_width, dis_height)
+    #     # pygame.time.delay(2000)        
+        
+    #     x1, y1 = update_snake_position(x1, y1, x1_change, y1_change)
+    #     # x1 += x1_change
+    #     # y1 += y1_change
+        
+    #     # grid_surface = create_grid_surface(dis_width, dis_height, snake_size_link, black, blue)
+    #     draw_grid(dis, grid_surface)
+        
+    #     score = length_of_snake - 1 # to change!
+    #     # display_info(score, snake_speed, score_font, yellow, dis) # Потім розкоментуй !
+        
+    #     draw_food(dis, green, food_x, food_y, snake_size_link)
+    #     snake_head = update_snake(x1, y1, snake_coord_lists)
+        
+    #     trim_snake_tail(snake_coord_lists, length_of_snake)
+
+    #     game_lost_state = self_collision(snake_coord_lists, snake_head, game_lost_state)
+
+    #     draw_snake(snake_size_link, snake_coord_lists, dis, black)
+        
+    #     pygame.display.update()
+
+    #     if x1 == food_x and y1 == food_y:
+    #         food_x, food_y = get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y)
+    #         length_of_snake = increm_len_snake(length_of_snake)            
+
+    #     clock.tick(snake_speed)
+    
+    # pygame.quit()
+    # quit()
+
+
 def main():
-    # print(f"config.PARAMETERS = {config.PARAMETERS}")
-    # clock, dis_width, dis_height, dis, = config.PARAMETERS["clock"], config.PARAMETERS["dis_width"], config.PARAMETERS["dis_height"], config.PARAMETERS["dis"]
-    # print(f"config.PARAMETERS.clock = {config.PARAMETERS['clock']}")
-    # print(f"config.PARAMETERS.dis_width = {config.PARAMETERS['dis_width']}")
-    # print(f"config.PARAMETERS.dis_height = {config.PARAMETERS['dis_height']}")
-    # print(f"config.PARAMETERS.dis = {config.PARAMETERS['dis']}")
+
+    # # print(f"config.PARAMETERS = {config.PARAMETERS}")
+    # # clock, dis_width, dis_height, dis, = config.PARAMETERS["clock"], config.PARAMETERS["dis_width"], config.PARAMETERS["dis_height"], config.PARAMETERS["dis"]
+    # # print(f"config.PARAMETERS.clock = {config.PARAMETERS['clock']}")
+    # # print(f"config.PARAMETERS.dis_width = {config.PARAMETERS['dis_width']}")
+    # # print(f"config.PARAMETERS.dis_height = {config.PARAMETERS['dis_height']}")
+    # # print(f"config.PARAMETERS.dis = {config.PARAMETERS['dis']}")
+    
     params_main = init_params_for_main()
     clock, font_style, score_font, dis_width, dis_height, dis = params_main["clock"], params_main["font_style"], params_main["score_font"], params_main["dis_width"], params_main["dis_height"], params_main["dis"][0]
     
