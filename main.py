@@ -2,13 +2,16 @@
 import pygame
 import time
 import random
-import config
+from config import PARAMS
 import graphic
 
     # Порада:
     # Створіть окремі файли для логіки гри, рендерингу, обробки подій тощо.
 # Спершу розділи функції за групами, а ті - розкинь по відповідним файлам.
 # Тоді у головному файлі буде менше коду, - відповідно, стане легше та швидше працювати з кодом
+
+# Прибрав такі функції:
+#     init_params_for_main()
 
 # Функції, які потребують об'єднання:
 #     init_params_for_game_loop()
@@ -18,8 +21,8 @@ import graphic
 #     display_info
 
 # Перевір, або об'єднай їх!
-    # update_snake
-    # update_snake_position
+    # add_head_to_body
+    # move_snake_head
 
 
 # Функції з розділу "Графіка":
@@ -33,12 +36,12 @@ import graphic
 #     fade_to_black
 
 # Функції з розділу "Логіка":
-#     update_snake
+#     add_head_to_body
 #     trim_snake_tail
 #     self_collision
 #     get_coord_new_food
 #     check_collision_with_walls
-#     update_snake_position
+#     move_snake_head
 #     coords_center_rect
 
 
@@ -67,7 +70,7 @@ import graphic
 #         Кожна з них має цикл for, та часові павзи: time.sleep та time.delay
     
 
-#     update_snake
+#     add_head_to_body
 #         Додає нові координати (x1, y1) (і повертає їх) голови Змійки до snake_coord_lists.
 #         Спершу то координати центру поля.
 #         А в процесі руху Змійки, на кожному наступному кроці, вони стають координатами нового поля,
@@ -87,7 +90,7 @@ import graphic
 #     check_collision_with_walls
 #         Перевірка на зіткнення Змійки (її голови) зі стіною
 
-#     update_snake_position
+#     move_snake_head
 #         Щокроку змінює координати (x1, y1) (і повертає їх) голови Змійки.
 #         На кожному наступному кроці, вони стають координатами нового поля,
 #         на яке перемістилась голова Змійки
@@ -124,6 +127,18 @@ import graphic
 #     game_loop
 #         Фактично, містить в собі усю гру (без деяких ініціацій)
 
+
+# ініціація
+
+# графіка
+# інформативність
+
+# обробка вводу
+
+# рух Змійки
+# зіткнення
+
+# стани гри
 
 
 # # Які функції виконують більше, ніж одну задачу:
@@ -233,7 +248,7 @@ import graphic
 
 # while True:
 #     handle_events()
-#     update_snake()
+#     add_head_to_body()
 #     collision = check_collisions()
 #     if collision:
 #         game_over()
@@ -269,85 +284,12 @@ import graphic
     # 6) Розбити код на функції
     # 7) Використати ООП
 
-def init_params_for_game_loop():
-    params_for_game_loop =  {
-            "black": (0, 0, 0),
-            "red": (213, 50, 80),
-            "blue": (50, 153, 213),
-            "yellow": (255, 255, 102),
-            "green": (0, 255, 0),
-            "colors": [(255, 0, 0), (255, 165, 0), (255, 255, 0), (0, 255, 0), (0, 0, 255), (75, 0, 130), (238, 130, 238)],
-            "snake_size_link": 10,  # Параметр ланки (елемента) ланцюга Змійки
-            "snake_speed": 5,
-            "last_key_pressed": None,
-            "game_over_status": False,
-            "game_lost_state": False,
-            "x1_change": 0,
-            "y1_change": 0,
-            "snake_coord_lists": [],
-            "length_of_snake": 1
-    }
-
-    params_for_game_loop["key_direction_map"] = {
-        pygame.K_LEFT: (-params_for_game_loop["snake_size_link"], 0),
-        pygame.K_RIGHT: (params_for_game_loop["snake_size_link"], 0),
-        pygame.K_UP: (0, -params_for_game_loop["snake_size_link"]),
-        pygame.K_DOWN: (0, params_for_game_loop["snake_size_link"])
-    }
-
-    return params_for_game_loop
-
-# Те, чого немає у config.py:
-
-# key_direction_map = {
-#     pygame.K_LEFT: (-params["snake_size_link"], 0)
-#     pygame.K_RIGHT: (params["snake_size_link"], 0)
-#     pygame.K_UP: (0, -params["snake_size_link"])
-#     pygame.K_DOWN: (0, params["snake_size_link"])
-# }
-# clock =  pygame.time.Clock()
-# font_style =  pygame.font.SysFont("bahnshrift", 25)
-# score_font =  pygame.font.SysFont("comicsansms", 35)
-# dis =  pygame.display.set_mode((dis_width, dis_height))
-
-
-def init_params_for_main():
-    pygame.init()
-
-    params_for_main =  {
-        "clock":  pygame.time.Clock(),
-        "font_style":  pygame.font.SysFont("bahnshrift", 25),
-        "score_font":  pygame.font.SysFont("comicsansms", 35)
-    }
-
-        # "dis_width": 800,
-        # "dis_height": 600,
-    # Для прототипу:
-    params_for_main["dis_width"] = 300
-    params_for_main["dis_height"] = 300
-
-    # !!!
-    # Якщо прибрати кому наприкінці, - тоді буде помилка:
-    #     snake_base_of_edureka\main.py", line 619, in main
-    #     clock, font_style, score_font, dis_width, dis_height, dis = params_main["clock"], params_main["font_style"], params_main["score_font"], params_main["dis_width"], params_main["dis_height"], params_main["dis"][0]
-    #     TypeError: 'pygame.surface.Surface' object is not subscriptable
-    # А з комою - працює якось і чомусь...
-    params_for_main["dis"] =  pygame.display.set_mode((params_for_main["dis_width"], params_for_main["dis_height"])),
-
-    pygame.display.set_caption("Змійка")
-    # pygame.time.delay(2000)
-
-    # print(f"params_for_main['dis'] == {params_for_main['dis']}")
-    # print(f"type(params_for_main['dis']) == {type(params_for_main['dis'])}")
-
-    return params_for_main
-
 
 # Змінюємо довжину змійки під час споживання шматка їжі
 # Збільшуємо довжину змійки
 # І тут же можна додати перевірку на зіткнення Змійки зі своїм тілом, або зі стіною
 # логіка
-def update_snake(x1, y1, snake_coord_lists):
+def add_head_to_body(x1, y1, snake_coord_lists):
     snake_head = (int(x1), int(y1))
     snake_coord_lists.append(snake_head)
     return snake_head
@@ -363,6 +305,7 @@ def self_collision(snake_coord_lists, snake_head, game_lost_state):
     for x in snake_coord_lists[:-1]:
         if x == snake_head:
             game_lost_state = True
+            # print(f"Intro def self_collision():  Is True?..  game_lost_state == {game_lost_state}")
             # pygame.time.delay(2000)
     return game_lost_state
 
@@ -427,11 +370,11 @@ def increm_len_snake(length_of_snake):
 #     return True
 
 
-def process_endgame_input(params, dis, score_font, clock, font_style, dis_width, dis_height, game_over_status, game_lost_state):
+def process_endgame_input(dis, score_font, clock, font_style, dis_width, dis_height, game_over_status, game_lost_state):
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
             game_over_status, game_lost_state = gameover_logic(event, game_over_status, game_lost_state, dis)
-            game_continuation(event, params, dis, score_font, clock, font_style, dis_width, dis_height)
+            game_continuation(event, dis, score_font, clock, font_style, dis_width, dis_height)
     return game_over_status, game_lost_state
 
 def gameover_logic(event, game_over_status, game_lost_state, dis):
@@ -444,7 +387,7 @@ def gameover_logic(event, game_over_status, game_lost_state, dis):
     return game_over_status, game_lost_state
 
 
-def game_continuation(event, params, dis, score_font, clock, font_style, dis_width, dis_height):
+def game_continuation(event, dis, score_font, clock, font_style, dis_width, dis_height):
     if event.key == pygame.K_c:
         game_loop(dis, score_font, clock, font_style, dis_width, dis_height)
 
@@ -473,25 +416,18 @@ def check_collision_with_walls(x1, y1, dis_width, dis_height):
     return not(0 <= x1 < dis_width and 0 <= y1 < dis_height)
 
 # логіка
-def update_snake_position(x1, y1, x1_change, y1_change):
+def move_snake_head(x1, y1, x1_change, y1_change):
     x1 += x1_change
     y1 += y1_change
     return x1, y1
 
 
-# list_coords = [food_x, food_y, snake_size_link, snake_size_link]
-# логіка
-def coords_center_rect(list_coords):
-    food_x, food_y, snake_size_link, snake_size_link = list_coords
-    # print(f"food_x, food_y, snake_size_link, snake_size_link = {food_x}, {food_y}, {snake_size_link}, {snake_size_link}")
 # def draw_food(dis, green, food_x, food_y, snake_size_link):
 #     pygame.draw.rect(dis, green, [food_x, food_y, snake_size_link, snake_size_link])
 
 
 def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
-
-    params = init_params_for_game_loop()
-    black, red, blue, yellow, green, colors, snake_size_link, snake_speed, last_key_pressed, game_over_status, game_lost_state, x1_change, y1_change, snake_coord_lists, length_of_snake, key_direction_map = params["black"], params["red"], params["blue"], params["yellow"], params["green"], params["colors"], params["snake_size_link"], params["snake_speed"], params["last_key_pressed"], params["game_over_status"], params["game_lost_state"], params["x1_change"], params["y1_change"], params["snake_coord_lists"], params["length_of_snake"], params["key_direction_map"]
+    black, red, blue, yellow, green, colors, snake_size_link, snake_speed, last_key_pressed, game_over_status, game_lost_state, x1_change, y1_change, snake_coord_lists, length_of_snake, key_direction_map =  PARAMS["black"], PARAMS["red"], PARAMS["blue"], PARAMS["yellow"], PARAMS["green"],  PARAMS["colors"], PARAMS["snake_size_link"], PARAMS["snake_speed"], PARAMS["last_key_pressed"],  PARAMS["game_over_status"], PARAMS["game_lost_state"], PARAMS["x1_change"], PARAMS["y1_change"],  PARAMS["snake_coord_lists"], PARAMS["length_of_snake"], PARAMS["key_direction_map"]
     grid_surface = graphic.create_grid_surface(dis_width, dis_height, snake_size_link, black, blue)
 
     x1 = int(dis_width / 2)
@@ -513,7 +449,7 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
             dis.fill(blue)
             graphic.msg_lost("You Lost! Press Q-Quit or C-Play Again", red, font_style, dis_width, dis_height, dis)
             pygame.display.update()
-            game_over_status, game_lost_state = process_endgame_input(params, dis, score_font, clock, font_style, dis_width, dis_height, game_over_status, game_lost_state)
+            game_over_status, game_lost_state = process_endgame_input(dis, score_font, clock, font_style, dis_width, dis_height, game_over_status, game_lost_state)
                     
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -529,7 +465,7 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
         game_lost_state = check_collision_with_walls(x1, y1, dis_width, dis_height)
 
         graphic.draw_food(dis, green, food_x, food_y, snake_size_link)
-        snake_head = update_snake(x1, y1, snake_coord_lists)  # ???
+        snake_head = add_head_to_body(x1, y1, snake_coord_lists)  # ???
         # eat_count += 1
         # print(f"eat_count == {eat_count}")
 
@@ -581,8 +517,8 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
         # print(f"length_of_snake == {length_of_snake}")
         # print(f"length of available_positions == {len(available_positions)}")
         
-        x1, y1 = update_snake_position(x1, y1, x1_change, y1_change)
-        # snake_head = update_snake(x1, y1, snake_coord_lists)
+        x1, y1 = move_snake_head(x1, y1, x1_change, y1_change)
+        # snake_head = add_head_to_body(x1, y1, snake_coord_lists)
 
         # if snake_head in available_positions:
         #     # print(f"snake_head in available_positions")
@@ -595,7 +531,7 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
         # score = length_of_snake - 1 # to change!
         # # display_info(score, snake_speed, score_font, yellow, dis) # Потім розкоментуй !
         
-        # game_lost_state = self_collision(snake_coord_lists, snake_head, game_lost_state)
+        game_lost_state = self_collision(snake_coord_lists, snake_head, game_lost_state)
 
         if x1 == food_x and y1 == food_y:
             food_x, food_y = get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y)
@@ -607,7 +543,7 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
     quit()
 
 
-
+    # delete!
     # params = init_params_for_game_loop()
     # black, red, blue, yellow, green, colors, snake_size_link, snake_speed, last_key_pressed, game_over_status, game_lost_state, x1_change, y1_change, snake_coord_lists, length_of_snake, key_direction_map = params["black"], params["red"], params["blue"], params["yellow"], params["green"], params["colors"], params["snake_size_link"], params["snake_speed"], params["last_key_pressed"], params["game_over_status"], params["game_lost_state"], params["x1_change"], params["y1_change"], params["snake_coord_lists"], params["length_of_snake"], params["key_direction_map"]
     # grid_surface = create_grid_surface(dis_width, dis_height, snake_size_link, black, blue)
@@ -653,7 +589,7 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
     #     game_lost_state = check_collision_with_walls(x1, y1, dis_width, dis_height)
     #     # pygame.time.delay(2000)        
         
-    #     x1, y1 = update_snake_position(x1, y1, x1_change, y1_change)
+    #     x1, y1 = move_snake_head(x1, y1, x1_change, y1_change)
     #     # x1 += x1_change
     #     # y1 += y1_change
         
@@ -664,7 +600,7 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
     #     # display_info(score, snake_speed, score_font, yellow, dis) # Потім розкоментуй !
         
     #     draw_food(dis, green, food_x, food_y, snake_size_link)
-    #     snake_head = update_snake(x1, y1, snake_coord_lists)
+    #     snake_head = add_head_to_body(x1, y1, snake_coord_lists)
         
     #     trim_snake_tail(snake_coord_lists, length_of_snake)
 
@@ -685,16 +621,8 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
 
 
 def main():
-
-    # # print(f"config.PARAMETERS = {config.PARAMETERS}")
-    # # clock, dis_width, dis_height, dis, = config.PARAMETERS["clock"], config.PARAMETERS["dis_width"], config.PARAMETERS["dis_height"], config.PARAMETERS["dis"]
-    # # print(f"config.PARAMETERS.clock = {config.PARAMETERS['clock']}")
-    # # print(f"config.PARAMETERS.dis_width = {config.PARAMETERS['dis_width']}")
-    # # print(f"config.PARAMETERS.dis_height = {config.PARAMETERS['dis_height']}")
-    # # print(f"config.PARAMETERS.dis = {config.PARAMETERS['dis']}")
-    
-    params_main = init_params_for_main()
-    clock, font_style, score_font, dis_width, dis_height, dis = params_main["clock"], params_main["font_style"], params_main["score_font"], params_main["dis_width"], params_main["dis_height"], params_main["dis"][0]
+    clock, font_style, score_font, dis_width, dis_height, dis =  PARAMS["clock"], PARAMS["font_style"], PARAMS["score_font"], PARAMS["dis_width"], PARAMS["dis_height"], PARAMS["dis"][0]
+    PARAMS["caption"]
     
     game_loop(dis, score_font, clock, font_style, dis_width, dis_height)
     

@@ -28,6 +28,10 @@ import pygame, time
 
 #     draw_grid
 #         Просто блітимо вже намальований grid_surface на екран
+
+#     coords_center_rect
+#         Буде використовуватись для повернення координат центру прямокутника, -
+#         для полегшення переходу до іншої системи координат
     
 
 # Використання pygame.Surface для збереження сітки ігрового поля
@@ -105,3 +109,9 @@ def fade_to_black(dis):
         pygame.display.update()
         # pygame.time.delay(50)
 # -------------------------------------
+
+# list_coords = [food_x, food_y, snake_size_link, snake_size_link]
+# логіка
+def coords_center_rect(list_coords):
+    food_x, food_y, snake_size_link, snake_size_link = list_coords
+    # print(f"food_x, food_y, snake_size_link, snake_size_link = {food_x}, {food_y}, {snake_size_link}, {snake_size_link}")

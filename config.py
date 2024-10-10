@@ -1,5 +1,7 @@
 import pygame
-PARAMETERS =  {
+
+pygame.init()
+PARAMS =  {
             "black": (0, 0, 0),
             "red": (213, 50, 80),
             "blue": (50, 153, 213),
@@ -16,17 +18,47 @@ PARAMETERS =  {
             "snake_coord_lists": [],
             "length_of_snake": 1,
             "clock":  pygame.time.Clock(),
-            # "font_style":  pygame.font.SysFont("bahnshrift", 25),
-            # "score_font":  pygame.font.SysFont("comicsansms", 35),
+            "font_style":  pygame.font.SysFont("bahnshrift", 25),
+            "score_font":  pygame.font.SysFont("comicsansms", 35),
             "dis_width": 200,
-            "dis_height": 200
+            "dis_height": 200,
     }
 
-PARAMETERS["key_direction_map"] = {
-            pygame.K_LEFT: (-PARAMETERS["snake_size_link"], 0),
-            pygame.K_RIGHT: (PARAMETERS["snake_size_link"], 0),
-            pygame.K_UP: (0, -PARAMETERS["snake_size_link"]),
-            pygame.K_DOWN: (0, PARAMETERS["snake_size_link"])
+PARAMS["key_direction_map"] = {
+            pygame.K_LEFT: (-PARAMS["snake_size_link"], 0),
+            pygame.K_RIGHT: (PARAMS["snake_size_link"], 0),
+            pygame.K_UP: (0, -PARAMS["snake_size_link"]),
+            pygame.K_DOWN: (0, PARAMS["snake_size_link"]),
     }
 
-PARAMETERS["dis"] = pygame.display.set_mode((PARAMETERS["dis_width"], PARAMETERS["dis_height"]))
+PARAMS["dis"] = pygame.display.set_mode((PARAMS["dis_width"], PARAMS["dis_height"])),
+PARAMS["caption"] = pygame.display.set_caption("Змійка")
+
+# pygame.quit()
+# quit()
+
+
+# black
+# red
+# blue
+# yellow
+# green
+# colors
+# snake_size_link
+# snake_speed
+# last_key_pressed
+# game_over_status
+# game_lost_state
+# x1_change
+# y1_change
+# snake_coord_lists
+# length_of_snake
+# key_direction_map
+
+
+# clock
+# font_style
+# score_font
+# dis_width
+# dis_height
+# dis
