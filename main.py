@@ -16,13 +16,14 @@ import food
 #     ^^^^^^^^^^^^^^
 # ValueError: not enough values to unpack (expected 2, got 0)
 
+# Може, це через рекурсивні виклики game_loop()?..
+
+
     # Порада:
     # Створіть окремі файли для логіки гри, рендерингу, обробки подій тощо.
 # Спершу розділи функції за групами, а ті - розкинь по відповідним файлам.
 # Тоді у головному файлі буде менше коду, - відповідно, стане легше та швидше працювати з кодом
 
-# Прибрав такі функції:
-#     init_params_for_main()
 
 # Функції, які потребують об'єднання:
 #     init_params_for_game_loop()
@@ -361,57 +362,6 @@ import food
     #     del snake_coord_lists[:-length_of_snake]
 
 
-# логіка
-def get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y):
-    # Зберігаємо усі можливі координати у списку:
-    available_positions = [
-        (x, y) for x in range(0, dis_width, snake_size_link) for y in range(0, dis_height, snake_size_link)
-    ]
-    # Видаляємо з неї усі координати тіла Змійки:
-    # when available_positions is set
-    # available_positions.difference_update(set(snake_coord_lists))
-    
-    # print(f"available_positions before remove = {available_positions}")
-    # print(f"snake_coord_lists before remove = {snake_coord_lists}")
-    # when available_positions is set
-    
-    # if snake_coord_lists in available_positions:
-    #     available_positions.remove(snake_coord_lists)                # when available_positions is list
-    #     # print(f"available_positions after remove = {available_positions}")
-    
-    # Вибираємо нову їжу з решти доступних координат:
-    # food_x, food_y = random.choice(list(available_positions))
-    # print(f"available_positions before IF = {len(available_positions)}")
-    if food_x is not None and food_y is not None:
-        if ([food_x, food_y] in available_positions):
-            # print(f"available_positions in nested IF, Before Remove = {len(available_positions)}")
-            # print(f"[food_x, food_y] in nested IF, Before Remove = {[food_x, food_y]}")
-            available_positions.remove([food_x, food_y])
-            # print(f"available_positions in nested IF, After Remove = {len(available_positions)}")
-    if snake_head in available_positions:
-        # print(f"available_positions in IF, Before Remove = {len(available_positions)}")
-        # print(f"snake_head in nested IF, Before Remove = {snake_head}")
-        available_positions.remove(snake_head)
-    
-    # print(f"available_positions, Before Append = {len(available_positions)}")
-    # print(f"snake_tail, Before Append = {snake_coord_lists[:-length_of_snake]}")
-    
-    # !!!
-    # У коді ви додаєте всі координати хвоста до available_positions через:
-    print(f"Before:   len(available_positions) == {len(available_positions)}")
-    available_positions.append(snake_coord_lists[:-length_of_snake])   # + snake_tail
-    print(f"After:   len(available_positions) == {len(available_positions)}")
-    # Це може призвести до непередбачуваних результатів, оскільки ви додаєте список всередину списку доступних позицій. Правильніше було б додавати окремі координати
-    
-    print(f"Before: (food_x, food_y) == ({food_x}, {food_y})")
-    food_x, food_y = random.choice(available_positions)
-    print(f"After: (food_x, food_y) == ({food_x}, {food_y})")
-    # print(f"food_x = {food_x}")
-    # print(f"food_y = {food_y}")
-    # food_x = round(random.randrange(0, dis_width - snake_size_link) / 10.0) * 10.0
-    # food_y = round(random.randrange(0, dis_height - snake_size_link) / 10.0) * 10.0
-    # return food_x, food_y, available_positions
-    return int(food_x), int(food_y)
 
 
     # def increm_len_snake(length_of_snake):
@@ -427,21 +377,8 @@ def get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists
 
 
 def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
-    black, red, blue, yellow, green, colors, snake_size_link, snake_speed, last_key_pressed, game_over_status, game_lost_state, x1_change, y1_change, snake_coord_lists, length_of_snake, key_direction_map =  PARAMS["black"], PARAMS["red"], PARAMS["blue"], PARAMS["yellow"], PARAMS["green"],  PARAMS["colors"], PARAMS["snake_size_link"], PARAMS["snake_speed"], PARAMS["last_key_pressed"],  PARAMS["game_over_status"], PARAMS["game_lost_state"], PARAMS["x1_change"], PARAMS["y1_change"],  PARAMS["snake_coord_lists"], PARAMS["length_of_snake"], PARAMS["key_direction_map"]
+    black, red, blue, green, colors, snake_size_link, snake_speed, game_over_status, game_lost_state, x1_change, y1_change, snake_coord_lists, length_of_snake, key_direction_map, snake_head, food_x, food_y, eat_count, available_positions, x1, y1 =  PARAMS["black"], PARAMS["red"], PARAMS["blue"], PARAMS["green"],  PARAMS["colors"], PARAMS["snake_size_link"], PARAMS["snake_speed"],  PARAMS["game_over_status"], PARAMS["game_lost_state"], PARAMS["x1_change"], PARAMS["y1_change"],  PARAMS["snake_coord_lists"], PARAMS["length_of_snake"], PARAMS["key_direction_map"], PARAMS["snake_head"], PARAMS["food_x"], PARAMS["food_y"], PARAMS["eat_count"], PARAMS["available_positions"], PARAMS["x1"], PARAMS["y1"]
     grid_surface = graphic.create_grid_surface(dis_width, dis_height, snake_size_link, black, blue)
-
-    x1 = int(dis_width / 2)
-    y1 = int(dis_height / 2)
-
-    snake_coord_lists = []
-    length_of_snake = 1
-
-    # available_positions = []
-    snake_head = []
-    food_x = food_y = None
-
-    eat_count = 0
-
     food_x, food_y = food.get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y)
 
     while not game_over_status:
@@ -621,7 +558,7 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
 
 
 def main():
-    clock, font_style, score_font, dis_width, dis_height, dis =  PARAMS["clock"], PARAMS["font_style"], PARAMS["score_font"], PARAMS["dis_width"], PARAMS["dis_height"], PARAMS["dis"][0]
+    clock, font_style, score_font, dis_width, dis_height, dis =  PARAMS["clock"], PARAMS["font_style"], PARAMS["score_font"], PARAMS["dis_width"], PARAMS["dis_height"], PARAMS["dis"]
     PARAMS["caption"]
     
     game_loop(dis, score_font, clock, font_style, dis_width, dis_height)

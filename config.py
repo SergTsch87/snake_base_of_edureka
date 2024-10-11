@@ -5,12 +5,10 @@ PARAMS =  {
             "black": (0, 0, 0),
             "red": (213, 50, 80),
             "blue": (50, 153, 213),
-            "yellow": (255, 255, 102),
             "green": (0, 255, 0),
             "colors": [(255, 0, 0), (255, 165, 0), (255, 255, 0), (0, 255, 0), (0, 0, 255), (75, 0, 130), (238, 130, 238)],
             "snake_size_link": 10,  # Параметр ланки (елемента) ланцюга Змійки
             "snake_speed": 5,
-            "last_key_pressed": None,
             "game_over_status": False,
             "game_lost_state": False,
             "x1_change": 0,
@@ -22,6 +20,12 @@ PARAMS =  {
             "score_font":  pygame.font.SysFont("comicsansms", 35),
             "dis_width": 200,
             "dis_height": 200,
+
+            "available_positions": [],
+            "snake_head": [],
+            "food_x": None,
+            "food_y": None,
+            "eat_count": 0,
     }
 
 PARAMS["key_direction_map"] = {
@@ -31,8 +35,11 @@ PARAMS["key_direction_map"] = {
             pygame.K_DOWN: (0, PARAMS["snake_size_link"]),
     }
 
-PARAMS["dis"] = pygame.display.set_mode((PARAMS["dis_width"], PARAMS["dis_height"])),
+PARAMS["dis"] = pygame.display.set_mode((PARAMS["dis_width"], PARAMS["dis_height"]))
 PARAMS["caption"] = pygame.display.set_caption("Змійка")
+PARAMS["x1"] = int(PARAMS["dis_width"] / 2)
+PARAMS["y1"] = int(PARAMS["dis_height"] / 2)
+
 
 # pygame.quit()
 # quit()
