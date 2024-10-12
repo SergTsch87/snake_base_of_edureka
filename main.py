@@ -212,8 +212,18 @@ import food
 # #     create_grid_surface
 # #         Містить два цикли for, - чи можна якось оптимізувати їх?..
 
+    # get_coord_new_food
+    #     Неправильно обчислює пару координат available_positions для їжі
+
+    # game_continuation
+    #     Містить в собі рекурсивний виклик game_loop
+
+    # process_endgame_input
+    #     Містить в собі game_continuation, яка у свою чергу виконує рекурсивний виклик game_loop
+
 #     game_loop
 #         Фактично, містить в собі усю гру (без деяких ініціацій)
+        # Містить в собі process_endgame_input, яка має рекурсивний виклик game_loop
 
 
 # !!!
@@ -375,18 +385,55 @@ import food
     #     y1 += y1_change
     #     return x1, y1
 
+def reset_game_state():
+    print(f"begin reset_game_state")
+    PARAMS["snake_coord_lists"] = [[0, 0]]
+    PARAMS["length_of_snake"] = 1
+    PARAMS["x1"] = int(PARAMS["dis_width"] / 2)
+    PARAMS["y1"] = int(PARAMS["dis_height"] / 2)
+    PARAMS["x1_change"] = 0
+    PARAMS["y1_change"] = 0
+    PARAMS["eat_count"] = 0
+    PARAMS["game_over_status"] = False
+    PARAMS["game_lost_state"] = False
+    PARAMS["snake_speed"] = 5
+    PARAMS["available_positions"] = []
+    PARAMS["snake_head"] = [0, 0]
+    PARAMS["food_x"] = None
+    PARAMS["food_y"] = None
+    print(f"the end reset_game_state")
+    
+
 
 def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
-    black, red, blue, green, colors, snake_size_link, snake_speed, game_over_status, game_lost_state, x1_change, y1_change, snake_coord_lists, length_of_snake, key_direction_map, snake_head, food_x, food_y, eat_count, available_positions, x1, y1 =  PARAMS["black"], PARAMS["red"], PARAMS["blue"], PARAMS["green"],  PARAMS["colors"], PARAMS["snake_size_link"], PARAMS["snake_speed"],  PARAMS["game_over_status"], PARAMS["game_lost_state"], PARAMS["x1_change"], PARAMS["y1_change"],  PARAMS["snake_coord_lists"], PARAMS["length_of_snake"], PARAMS["key_direction_map"], PARAMS["snake_head"], PARAMS["food_x"], PARAMS["food_y"], PARAMS["eat_count"], PARAMS["available_positions"], PARAMS["x1"], PARAMS["y1"]
+    reset_game_state()
+
+    black, red, blue, green, colors = PARAMS["black"], PARAMS["red"], PARAMS["blue"], PARAMS["green"], PARAMS["colors"]
+    snake_size_link, snake_speed = PARAMS["snake_size_link"], PARAMS["snake_speed"]
+    game_over_status, game_lost_state = PARAMS["game_over_status"], PARAMS["game_lost_state"]
+    x1_change, y1_change, snake_coord_lists = PARAMS["x1_change"], PARAMS["y1_change"], PARAMS["snake_coord_lists"]
+    length_of_snake, key_direction_map = PARAMS["length_of_snake"], PARAMS["key_direction_map"]
+    snake_head, food_x, food_y, eat_count = PARAMS["snake_head"], PARAMS["food_x"], PARAMS["food_y"], PARAMS["eat_count"]
+    available_positions, x1, y1 = PARAMS["available_positions"], PARAMS["x1"], PARAMS["y1"]
+    
     grid_surface = graphic.create_grid_surface(dis_width, dis_height, snake_size_link, black, blue)
-    food_x, food_y = food.get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y)
+    food_x, food_y = food.get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y)\
 
     while not game_over_status:
-        while game_lost_state == True:
+        # while game_lost_state == True:
+        while game_lost_state:
             dis.fill(blue)
             graphic.msg_lost("You Lost! Press Q-Quit or C-Play Again", red, font_style, dis_width, dis_height, dis)
             pygame.display.update()
+
+            # print(f"game_over_status, game_lost_state Before input_handle.process_endgame_input(): {game_over_status}, {game_lost_state}")
+
+            # input_handle.process_endgame_input()
+            # input_handle.process_endgame_input(dis, score_font, clock, font_style, dis_width, dis_height, game_over_status, game_lost_state)
             game_over_status, game_lost_state = input_handle.process_endgame_input(dis, score_font, clock, font_style, dis_width, dis_height, game_over_status, game_lost_state)
+            # game_over_status, game_lost_state = input_handle.process_endgame_input()
+            
+            # print(f"game_over_status, game_lost_state After input_handle.process_endgame_input(): {game_over_status}, {game_lost_state}")
                     
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -403,16 +450,6 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
 
         graphic.draw_food(dis, green, food_x, food_y, snake_size_link)
         snake_head = move.add_head_to_body(x1, y1, snake_coord_lists)  # ???
-        # eat_count += 1
-        # print(f"eat_count == {eat_count}")
-
-        
-        # draw_snake(snake_size_link, snake_coord_lists, dis, black)
-        # print(f"list(snake_head) before = {list(snake_head)}")
-        # print(f"[food_x, food_y] before = {[food_x, food_y]}")
-        # print(f"eat_count before = {eat_count}")
-
-        # print(f"list(snake_head) == [food_x, food_y] == {list(snake_head) == [food_x, food_y]}")
 
         # !!!
         # Некоректна перевірка зіткнення з їжею:
@@ -420,59 +457,26 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
         # може бути ризикованим. Якщо є зміщення навіть на один піксель (наприклад, через нецілісні числа),
         # змійка може не з'їдати їжу. Краще використовувати точні координати або враховувати розмір змійки
         # та їжі при перевірці.
-        if list(snake_head) == [food_x, food_y]:
-            
-            # print(f"list(snake_head) before = {list(snake_head)}")
-            # print(f"[food_x, food_y] before = {[food_x, food_y]}")
-            # print(f"eat_count before = {eat_count}")
-
+        # !!!
+        # 1) У add_head_to_body(), snake_head є списком.
+        # 2) Чи не краще замінити цей код на add_head_to_body() ?..
+        if list(snake_head) == [food_x, food_y]:            
             snake_coord_lists.append(list(snake_head))
             eat_count += 1
-
-            # print(f"list(snake_head) after = {list(snake_head)}")
-            # print(f"[food_x, food_y] after = {[food_x, food_y]}")
-            # print(f"eat_count after = {eat_count}")
-            print(f"Eat!)\neat_count == {eat_count}")
+            # food_x, food_y = food.get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y)
+            # length_of_snake = move.increm_len_snake(length_of_snake)
         else:
-            # if length_of_snake == 1:
-            #     available_positions.append(list(snake_head))
-
-                # print(f"length_of_snake == {length_of_snake}")
-                # print(f"else: ... if length_of_snake == 1:")
-                # print(f"eat_count == {eat_count}")
-            
-            # elif length_of_snake > 1:
-            #     available_positions.append(snake_coord_lists[:-length_of_snake])
-            
-                # print(f"length_of_snake == {length_of_snake}")
-                # print(f"else: ... elif length_of_snake > 1:")
-                # print(f"eat_count == {eat_count}")
-            
             move.trim_snake_tail(snake_coord_lists, length_of_snake)
-        
-        # move_snake()
-        # print(f"length_of_snake == {length_of_snake}")
-        # print(f"length of available_positions == {len(available_positions)}")
-        
-        x1, y1 = move.move_snake_head(x1, y1, x1_change, y1_change)
-        # snake_head = add_head_to_body(x1, y1, snake_coord_lists)
 
-        # if snake_head in available_positions:
-        #     # print(f"snake_head in available_positions")
-        #     available_positions.remove(snake_head)
-        
+        x1, y1 = move.move_snake_head(x1, y1, x1_change, y1_change)        
         graphic.draw_snake(snake_size_link, snake_coord_lists, dis, black)
         pygame.display.update()
         
-
-        # score = length_of_snake - 1 # to change!
-        # # display_info(score, snake_speed, score_font, yellow, dis) # Потім розкоментуй !
-        
         game_lost_state = collisions.self_collision(snake_coord_lists, snake_head, game_lost_state)
 
-        if x1 == food_x and y1 == food_y:
-            food_x, food_y = food.get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y)
-            length_of_snake = move.increm_len_snake(length_of_snake)
+        # if x1 == food_x and y1 == food_y:
+        #     food_x, food_y = get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y)
+        #     length_of_snake = increm_len_snake(length_of_snake)            
 
         clock.tick(snake_speed)
     
@@ -558,10 +562,13 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
 
 
 def main():
-    clock, font_style, score_font, dis_width, dis_height, dis =  PARAMS["clock"], PARAMS["font_style"], PARAMS["score_font"], PARAMS["dis_width"], PARAMS["dis_height"], PARAMS["dis"]
+    clock, font_style, score_font = PARAMS["clock"], PARAMS["font_style"], PARAMS["score_font"]
+    dis_width, dis_height, dis = PARAMS["dis_width"], PARAMS["dis_height"], PARAMS["dis"]
+    game_over_status = PARAMS["game_over_status"]
     PARAMS["caption"]
     
-    game_loop(dis, score_font, clock, font_style, dis_width, dis_height)
+    while not game_over_status:
+        game_loop(dis, score_font, clock, font_style, dis_width, dis_height)
     
 
 if __name__ == "__main__":

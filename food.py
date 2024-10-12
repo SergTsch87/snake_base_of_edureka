@@ -15,7 +15,8 @@ import random
 def get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists, snake_head, length_of_snake, food_x, food_y):
     # Зберігаємо усі можливі координати у списку:
     available_positions = [
-        (x, y) for x in range(0, dis_width, snake_size_link) for y in range(0, dis_height, snake_size_link)
+        # (x, y) for x in range(0, dis_width, snake_size_link) for y in range(0, dis_height, snake_size_link)
+        [x, y] for x in range(0, dis_width, snake_size_link) for y in range(0, dis_height, snake_size_link)
     ]
     # Видаляємо з неї усі координати тіла Змійки:
     # when available_positions is set
@@ -32,12 +33,13 @@ def get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists
     # Вибираємо нову їжу з решти доступних координат:
     # food_x, food_y = random.choice(list(available_positions))
     # print(f"available_positions before IF = {len(available_positions)}")
-    if food_x is not None and food_y is not None:
-        if ([food_x, food_y] in available_positions):
-            # print(f"available_positions in nested IF, Before Remove = {len(available_positions)}")
-            # print(f"[food_x, food_y] in nested IF, Before Remove = {[food_x, food_y]}")
-            available_positions.remove([food_x, food_y])
-            # print(f"available_positions in nested IF, After Remove = {len(available_positions)}")
+    # if food_x is not None and food_y is not None:
+    #     if ([food_x, food_y] in available_positions):
+    #     # if ((food_x, food_y) in available_positions):
+    #         # print(f"available_positions in nested IF, Before Remove = {len(available_positions)}")
+    #         # print(f"[food_x, food_y] in nested IF, Before Remove = {[food_x, food_y]}")
+    #         available_positions.remove([food_x, food_y])
+    #         # print(f"available_positions in nested IF, After Remove = {len(available_positions)}")
     if snake_head in available_positions:
         # print(f"available_positions in IF, Before Remove = {len(available_positions)}")
         # print(f"snake_head in nested IF, Before Remove = {snake_head}")
@@ -55,6 +57,7 @@ def get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists
     
     print(f"Before: (food_x, food_y) == ({food_x}, {food_y})")
     food_x, food_y = random.choice(available_positions)
+    available_positions.remove([food_x, food_y])
     print(f"After: (food_x, food_y) == ({food_x}, {food_y})")
     # print(f"food_x = {food_x}")
     # print(f"food_y = {food_y}")

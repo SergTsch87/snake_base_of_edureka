@@ -29,26 +29,36 @@ import main
 #         Повертає координати наступної клітинки для переміщення Змійки
 
 def process_endgame_input(dis, score_font, clock, font_style, dis_width, dis_height, game_over_status, game_lost_state):
+# def process_endgame_input():
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
-            game_over_status, game_lost_state = gameover_logic(event, game_over_status, game_lost_state, dis)
-            game_continuation(event, dis, score_font, clock, font_style, dis_width, dis_height)
+            if event.key == pygame.K_q:
+                game_over_status = True
+                game_lost_state = False
+                # graphic.fade_to_black(dis)
+            elif event.key == pygame.K_c:
+                # print(f"Before main.reset_game_state() in elif event.key == pygame.K_c:")
+                main.reset_game_state()
+                # print(f"After main.reset_game_state() in elif event.key == pygame.K_c:")
+    
+            # game_over_status, game_lost_state = gameover_logic(event, game_over_status, game_lost_state, dis)
+            # game_continuation(event, dis, score_font, clock, font_style, dis_width, dis_height)
     return game_over_status, game_lost_state
 
 
-def gameover_logic(event, game_over_status, game_lost_state, dis):
-    if event.key == pygame.K_q:
-        game_over_status = True
-        game_lost_state = False
-        # pygame.time.delay(2000)
-        # gameover_anim(dis, colors)
-        graphic.fade_to_black(dis)
-    return game_over_status, game_lost_state
+# def gameover_logic(event, game_over_status, game_lost_state, dis):
+#     if event.key == pygame.K_q:
+#         game_over_status = True
+#         game_lost_state = False
+#         # pygame.time.delay(2000)
+#         # gameover_anim(dis, colors)
+#         graphic.fade_to_black(dis)
+#     return game_over_status, game_lost_state
 
 
-def game_continuation(event, dis, score_font, clock, font_style, dis_width, dis_height):
-    if event.key == pygame.K_c:
-        main.game_loop(dis, score_font, clock, font_style, dis_width, dis_height)
+# def game_continuation(event, dis, score_font, clock, font_style, dis_width, dis_height):
+#     if event.key == pygame.K_c:
+#         main.game_loop(dis, score_font, clock, font_style, dis_width, dis_height)
 
 
 def control_snake_keys(event, key_direction_map, length_of_snake, x1_change, y1_change):

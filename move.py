@@ -1,5 +1,5 @@
 #!usr/bin/env
-
+from config import PARAMS
 # import pygame
 
 
@@ -33,8 +33,12 @@
 # І тут же можна додати перевірку на зіткнення Змійки зі своїм тілом, або зі стіною
 # логіка
 def add_head_to_body(x1, y1, snake_coord_lists):
+    print(f"snake_head Before assign: {PARAMS['snake_head']}")
     snake_head = (int(x1), int(y1))
+    print(f"snake_head After assign: {PARAMS['snake_head']}")
+    print(f"snake_coord_lists Before append(snake_head): {snake_coord_lists}")
     snake_coord_lists.append(snake_head)
+    print(f"snake_coord_lists After append(snake_head): {snake_coord_lists}")
     return snake_head
 
 
