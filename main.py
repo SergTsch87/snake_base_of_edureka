@@ -569,7 +569,7 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
 black, red, blue, green, colors = PARAMS["black"], PARAMS["red"], PARAMS["blue"], PARAMS["green"], PARAMS["colors"]
 snake_size_link, snake_speed = PARAMS["snake_size_link"], PARAMS["snake_speed"]
 # game_over_status, game_lost_state = PARAMS["game_over_status"], PARAMS["game_lost_state"]
-x1_change, y1_change, snake_coord_lists = PARAMS["x1_change"], PARAMS["y1_change"], PARAMS["snake_coord_lists"]
+# x1_change, y1_change, snake_coord_lists = PARAMS["x1_change"], PARAMS["y1_change"], PARAMS["snake_coord_lists"]
 length_of_snake, key_direction_map = PARAMS["length_of_snake"], PARAMS["key_direction_map"]
 # snake_head = PARAMS["snake_head"]
 screen_width, screen_height, screen = PARAMS["screen_width"], PARAMS["screen_height"], PARAMS["screen"]
@@ -585,6 +585,7 @@ clock, font_style, score_font = PARAMS["clock"], PARAMS["font_style"], PARAMS["s
 #         #             pygame.K_DOWN: (0, PARAMS["snake_size_link"]),    }
 
 snake = [(screen_width // 2, screen_height // 2)]
+print(f'snake in main, init:  = {snake}')
 # # target = next_random_target(screen_width, screen_height, snake_size_link)
 # target = random_target()
 game_is_running = True
@@ -594,6 +595,7 @@ game_is_running = True
 
 def init_game():
     pygame.init()
+    x1_change, y1_change, snake_coord_lists = PARAMS["x1_change"], PARAMS["y1_change"], PARAMS["snake_coord_lists"]
     key_direction_map = PARAMS["key_direction_map"]
         # {           pygame.K_LEFT: (-PARAMS["snake_size_link"], 0),
         #             pygame.K_RIGHT: (PARAMS["snake_size_link"], 0),
@@ -603,7 +605,7 @@ def init_game():
     PARAMS["caption"]
     target = random_target()
     # print(f'in init_game(): target = {target}')
-    return target
+    return target, x1_change, y1_change
 
 
 
@@ -614,7 +616,7 @@ def random_target():
 
 
 # def get_coord_direction(event, key_direction_map, length_of_snake, x1_change, y1_change):
-def get_coord_direction():
+def get_coord_direction(x1_change, y1_change):
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN and event.key in key_direction_map:
             new_x_change, new_y_change = key_direction_map[event.key]
@@ -629,18 +631,25 @@ def next_random_target():
     print(f'in next_random_target(): target = {target}')
     return target
 
+
 def check_collision_with_walls():
-    return not(0 <= x1 < screen_width and 0 <= y1 < screen_height)
+    print(f'\nIntro def check_collision_with_walls():')
+    print(f'Result collision: {not(0 <= snake[0][0] < screen_width and 0 <= snake[0][1] < screen_height)}\n')
+    return not(0 <= snake[0][0] < screen_width and 0 <= snake[0][1] < screen_height)
+    # return not(0 <= x1 < screen_width and 0 <= y1 < screen_height)
 
 
 def self_collision():
+    print(f'\nIntro def self_collision():')
     head = snake[0]
     if head in snake[1:]:
         return True
+    print(f'Before return intro "def self_collision():\n')
     return False
 
 
 def check_collisions():
+    # Щр саме відбувається під час повернення функцій через return?..
     return check_collision_with_walls() or self_collision()
 
 
@@ -676,28 +685,35 @@ def update_snake(x1_change, y1_change):
     new_head = (snake[0][0] + x1_change, snake[0][1] + y1_change)
     snake.insert(0, new_head)
     snake.pop()
-    return
+
 
 def main():
-    target = init_game()
+    target, x1_change, y1_change = init_game()
     # print(f'in main(): target = {target}')
     while game_is_running:
         screen.fill(black)
-        x1_change, y1_change = get_coord_direction()
+        x1_change, y1_change = get_coord_direction(x1_change, y1_change)
         # print(f"x1_change, y1_change = {x1_change}, {y1_change}")
         update_snake(x1_change, y1_change)
 
         if check_collisions():
+            print(f'Intro "if check_collisions():"')
             if game_over_or_again() == 'exit':
+                print(f'Intro "if game_over_or_again() == exit:"')
                 # game_is_running = False
                 break
             elif game_over_or_again() == 'continue':
+                print(f'Intro "elif game_over_or_again() == continue:"')
                 init_game()
             # game_over_or_again()
         
         if check_target(target):
             target = next_random_target()
-            snake.append(snake[-1])
+            print(f'In if check_target(target): target = {target}')
+            print(f'snake Before append:  {snake}')
+            # snake.append(snake[-1])
+            snake.append(target)
+            print(f'snake After append:  {snake}')
 
         for segment in snake:
             pygame.draw.rect(screen, green, (*segment, snake_size_link, snake_size_link))

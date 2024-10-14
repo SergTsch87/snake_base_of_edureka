@@ -58,3 +58,7 @@ def move_snake_head(x1, y1, x1_change, y1_change):
 def increm_len_snake(length_of_snake):
     length_of_snake += 1
     return length_of_snake
+
+
+# list1 = [1, 2, 3]
+# print(f'list1[-1] = {list1[-1]}')
