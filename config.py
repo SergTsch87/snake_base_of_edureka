@@ -18,8 +18,8 @@ PARAMS =  {
             "clock":  pygame.time.Clock(),
             "font_style":  pygame.font.SysFont("bahnshrift", 25),
             "score_font":  pygame.font.SysFont("comicsansms", 35),
-            "dis_width": 200,
-            "dis_height": 200,
+            "screen_width": 200,
+            "screen_height": 200,
 
             "available_positions": [],
             "snake_head": [],
@@ -35,10 +35,10 @@ PARAMS["key_direction_map"] = {
             pygame.K_DOWN: (0, PARAMS["snake_size_link"]),
     }
 
-PARAMS["dis"] = pygame.display.set_mode((PARAMS["dis_width"], PARAMS["dis_height"]))
+PARAMS["screen"] = pygame.display.set_mode((PARAMS["screen_width"], PARAMS["screen_height"]))
 PARAMS["caption"] = pygame.display.set_caption("Змійка")
-PARAMS["x1"] = int(PARAMS["dis_width"] / 2)
-PARAMS["y1"] = int(PARAMS["dis_height"] / 2)
+PARAMS["x1"] = int(PARAMS["screen_width"] / 2)
+PARAMS["y1"] = int(PARAMS["screen_height"] / 2)
 
 
 # pygame.quit()
@@ -66,6 +66,6 @@ PARAMS["y1"] = int(PARAMS["dis_height"] / 2)
 # clock
 # font_style
 # score_font
-# dis_width
-# dis_height
+# screen_width
+# screen_height
 # dis
