@@ -7,8 +7,8 @@ PARAMS =  {
             "blue": (50, 153, 213),
             "green": (0, 255, 0),
             "colors": [(255, 0, 0), (255, 165, 0), (255, 255, 0), (0, 255, 0), (0, 0, 255), (75, 0, 130), (238, 130, 238)],
-            "snake_size_link": 10,  # Параметр ланки (елемента) ланцюга Змійки
-            "snake_speed": 5,
+            "snake_size_link": 20,  # Параметр ланки (елемента) ланцюга Змійки
+            "snake_speed": 20,
             "game_over_status": False,
             "game_lost_state": False,
             "x1_change": 0,
@@ -17,9 +17,10 @@ PARAMS =  {
             "length_of_snake": 1,
             "clock":  pygame.time.Clock(),
             "font_style":  pygame.font.SysFont("bahnshrift", 25),
-            "score_font":  pygame.font.SysFont("comicsansms", 35),
-            "screen_width": 200,
-            "screen_height": 200,
+            "score_font":  pygame.font.SysFont("comicsansms", 20),
+            "screen_width": 400,
+            "screen_height": 400,
+            "snake_score": 1,
 
             "available_positions": [],
             "snake_head": [],

@@ -9,20 +9,18 @@ import collisions
 import move
 import food
 
-# Змійка кілька разів ковтає їжу, поступово зростає, і все добре.
-# Аж ось, десь на 7-10-му кроці, щойно вона ковтнула черговий шматок їжі (і нікуди не врізалась!), - гра тут же завершується з помилкою:
-#                                                                         line 385, in get_coord_new_food
-#     food_x, food_y = random.choice(available_positions)
-#     ^^^^^^^^^^^^^^
-# ValueError: not enough values to unpack (expected 2, got 0)
-
-# Може, це через рекурсивні виклики game_loop()?..
-
-
-    # Порада:
-    # Створіть окремі файли для логіки гри, рендерингу, обробки подій тощо.
-# Спершу розділи функції за групами, а ті - розкинь по відповідним файлам.
-# Тоді у головному файлі буде менше коду, - відповідно, стане легше та швидше працювати з кодом
+# Додатки до гри:
+#     Намалюй текстову інформацію (бали та час) нагорі, над ігровим полем
+#     Нова система координат
+#     Зроби ефективне створення нової їжі за допомогою available_positions()
+#     Перешкоди на полі
+#     Звуки до гри
+#     Павза
+#     Система рівнів
+#     Дошка досягнень
+#     Налаштування для гри
+#     Дизайн у стилі Nokia
+#     ООП
 
 
 # Функції, які потребують об'єднання:
@@ -226,27 +224,12 @@ import food
         # Містить в собі process_endgame_input, яка має рекурсивний виклик game_loop
 
 
-# !!!
-# Всередині функції game_loop відбувається рекурсивний виклик:
-#     process_endgame_input() -> game_continuation() -> game_loop()
-# Треба замінити рекурсію на цикл, - задля збереження ресурсів програми та машини
-
-# Приведи до ладу функцію get_coord_new_food!..
-    # Бо, наразі, я не використовую змінну available_positions,
-    # яка створюється саме у цій функції, і більше нікуди не передається...
-
-# Напрямки:
-# (1, 0)
-# (-1, 0)
-# (0, 1)
-# (0, -1)
-
-# Перевір зайві змінні, які розпакував, - і прибери їх у моменті присвоєння (розпакування)
 
 # А що, як змінити "систему координат" для Змійки?
 # А саме - визначати координати кожної чарунки не за її кутами, а за її центром.
 # Відповідно, у нових функціях (які потребують координати Змійки, їжі тощо)
 # достатньо буде писати лише одну, а не дві, координати
+
 
 #  Додаткові можливості для гри
     # Додати паузу: Можна додати можливість ставити гру на паузу,
@@ -260,17 +243,13 @@ import food
     # Реалізуйте систему досягнень: Додайте повідомлення гравцеві про досягнення,
     # як-от "Ви досягли рекорду!" або "Ваша змійка виросла на 50 ланок!".
 
+
 # Ще поради щодо покращення гри:
 #     Розділіть логіку та графіку через класи (Snake, Food, Game).
 #     Оптимізуйте продуктивність через попереднє малювання сітки і рідкісні виклики pygame.display.update().
 #     Впровадьте ООП для кращої структури коду.
 #     Додайте нові функції (паузу, рівні складності, систему досягнень) для покращення геймплею.
 #     Винесіть налаштування у конфігураційний файл.
-
-# розділи логіку та графіку!
-# Зростання змійки після кожного прийому їжі.
-# Коли координати голови змійки (x1, y1) збігаються з координатами їжі (food_x, food_y),
-# генерується нова їжа, і змінна params["length_of_snake"] збільшується на 1, що означає зростання змійки.
 
 # А ще ж можна автоматизувати гру (за допомогою AI та звичайних алгоритмів), пустивши Змійку у самостіну подорож!)
 
@@ -308,9 +287,9 @@ import food
 # для визначення швидкості
 # для визначення балів / очок ( 1 бал - за одну їжу; 10 балів - за спец їжу )
 # для зупинки Змійки (в момент зіткнення)
-# 2) Створити нові функції
-# 3) Змінити керування Змійкою клавішами
-# 4) Змінити код відповідно до нового алгоритму (та перевірити, наскільки цей алгоритм відповідає правилам гри Змійка)
+# - 2) Створити нові функції
+# - 3) Змінити керування Змійкою клавішами
+# - 4) Змінити код відповідно до нового алгоритму (та перевірити, наскільки цей алгоритм відповідає правилам гри Змійка)
 # 5) - Прибрати зайві коментарі
 # 6) - Розділи графіку та логіку
 
@@ -567,46 +546,25 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
         # ================================================
 
 black, red, blue, green, colors = PARAMS["black"], PARAMS["red"], PARAMS["blue"], PARAMS["green"], PARAMS["colors"]
-snake_size_link, snake_speed = PARAMS["snake_size_link"], PARAMS["snake_speed"]
-# game_over_status, game_lost_state = PARAMS["game_over_status"], PARAMS["game_lost_state"]
-# x1_change, y1_change, snake_coord_lists = PARAMS["x1_change"], PARAMS["y1_change"], PARAMS["snake_coord_lists"]
+snake_size_link, snake_speed, snake_score = PARAMS["snake_size_link"], PARAMS["snake_speed"], PARAMS["snake_score"]
 length_of_snake, key_direction_map = PARAMS["length_of_snake"], PARAMS["key_direction_map"]
-# snake_head = PARAMS["snake_head"]
 screen_width, screen_height, screen = PARAMS["screen_width"], PARAMS["screen_height"], PARAMS["screen"]
 food_x, food_y, eat_count = PARAMS["food_x"], PARAMS["food_y"], PARAMS["eat_count"]
 available_positions, x1, y1 = PARAMS["available_positions"], PARAMS["x1"], PARAMS["y1"]
 
 clock, font_style, score_font = PARAMS["clock"], PARAMS["font_style"], PARAMS["score_font"]
 
-# key_direction_map = PARAMS["key_direction_map"]
-#         # {           pygame.K_LEFT: (-PARAMS["snake_size_link"], 0),
-#         #             pygame.K_RIGHT: (PARAMS["snake_size_link"], 0),
-#         #             pygame.K_UP: (0, -PARAMS["snake_size_link"]),
-#         #             pygame.K_DOWN: (0, PARAMS["snake_size_link"]),    }
-
 snake = [(screen_width // 2, screen_height // 2)]
-print(f'snake in main, init:  = {snake}')
-# # target = next_random_target(screen_width, screen_height, snake_size_link)
-# target = random_target()
 game_is_running = True
-# PARAMS["caption"]
-# grid_surface = graphic.create_grid_surface(screen_width, screen_height, snake_size_link, black, blue)
-
 
 def init_game():
     pygame.init()
     x1_change, y1_change, snake_coord_lists = PARAMS["x1_change"], PARAMS["y1_change"], PARAMS["snake_coord_lists"]
     key_direction_map = PARAMS["key_direction_map"]
-        # {           pygame.K_LEFT: (-PARAMS["snake_size_link"], 0),
-        #             pygame.K_RIGHT: (PARAMS["snake_size_link"], 0),
-        #             pygame.K_UP: (0, -PARAMS["snake_size_link"]),
-        #             pygame.K_DOWN: (0, PARAMS["snake_size_link"]),    }
-
     PARAMS["caption"]
     target = random_target()
-    # print(f'in init_game(): target = {target}')
+    print(f'in init_game(): target = {target}')
     return target, x1_change, y1_change
-
 
 
 def random_target():
@@ -615,7 +573,6 @@ def random_target():
     return x, y
 
 
-# def get_coord_direction(event, key_direction_map, length_of_snake, x1_change, y1_change):
 def get_coord_direction(x1_change, y1_change):
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN and event.key in key_direction_map:
@@ -628,28 +585,21 @@ def get_coord_direction(x1_change, y1_change):
 
 def next_random_target():
     target = random_target()
-    print(f'in next_random_target(): target = {target}')
     return target
 
 
 def check_collision_with_walls():
-    print(f'\nIntro def check_collision_with_walls():')
-    print(f'Result collision: {not(0 <= snake[0][0] < screen_width and 0 <= snake[0][1] < screen_height)}\n')
     return not(0 <= snake[0][0] < screen_width and 0 <= snake[0][1] < screen_height)
-    # return not(0 <= x1 < screen_width and 0 <= y1 < screen_height)
-
+    
 
 def self_collision():
-    print(f'\nIntro def self_collision():')
     head = snake[0]
     if head in snake[1:]:
         return True
-    print(f'Before return intro "def self_collision():\n')
     return False
 
 
 def check_collisions():
-    # Щр саме відбувається під час повернення функцій через return?..
     return check_collision_with_walls() or self_collision()
 
 
@@ -664,20 +614,14 @@ def game_over_or_again():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_n:
                     return 'exit'
-                    # game_over_status = True
-                    # game_lost_state = False
-                    # graphic.fade_to_black(dis)
                 elif event.key == pygame.K_y:
+                    print(f"Before main.reset_game_state() in elif event.key == pygame.K_y:")
                     return 'continue'
-                    # print(f"Before main.reset_game_state() in elif event.key == pygame.K_c:")
-                    # main.reset_game_state()
             elif event.type == pygame.QUIT:
                 return 'exit'
 
 
 def check_target(target):
-    # print(f'snake[0] = {snake[0]}')
-    # print(f'target = {target}')
     return snake[0] == target
 
 
@@ -687,65 +631,47 @@ def update_snake(x1_change, y1_change):
     snake.pop()
 
 
+def grow_snake():
+    snake.append(snake[-1])
+
+
+def draw_grid_snake_food(grid_surface, target, *kwarg):
+    graphic.draw_grid(screen, grid_surface)
+    graphic.draw_snake(snake_size_link, snake, screen, green)
+    graphic.draw_food(screen, red, target[0], target[1], snake_size_link)
+    graphic.display_info(snake_score, snake_speed, score_font, black, screen)
+
 def main():
     target, x1_change, y1_change = init_game()
-    # print(f'in main(): target = {target}')
+    grid_surface = graphic.create_grid_surface(screen_width, screen_height, snake_size_link, black, blue)
+
     while game_is_running:
         screen.fill(black)
         x1_change, y1_change = get_coord_direction(x1_change, y1_change)
-        # print(f"x1_change, y1_change = {x1_change}, {y1_change}")
         update_snake(x1_change, y1_change)
 
+        # if_check_collisions()
         if check_collisions():
-            print(f'Intro "if check_collisions():"')
-            if game_over_or_again() == 'exit':
-                print(f'Intro "if game_over_or_again() == exit:"')
-                # game_is_running = False
+            get_game_over_or_again = game_over_or_again()
+            if get_game_over_or_again == 'exit':
                 break
-            elif game_over_or_again() == 'continue':
-                print(f'Intro "elif game_over_or_again() == continue:"')
-                init_game()
-            # game_over_or_again()
+            elif get_game_over_or_again == 'continue':
+                target, x1_change, y1_change = init_game()
+                snake.clear()
+                snake.append((screen_width // 2, screen_height // 2))
         
         if check_target(target):
             target = next_random_target()
-            print(f'In if check_target(target): target = {target}')
-            print(f'snake Before append:  {snake}')
-            # snake.append(snake[-1])
-            snake.append(target)
-            print(f'snake After append:  {snake}')
-
-        for segment in snake:
-            pygame.draw.rect(screen, green, (*segment, snake_size_link, snake_size_link))
-
-        # Малювання цілі
-        pygame.draw.rect(screen, red, (*target, snake_size_link, snake_size_link))
+            grow_snake()
+            
+        draw_grid_snake_food(grid_surface, target, graphic.draw_grid, graphic.draw_snake, graphic.draw_food, graphic.display_info)
+        
         pygame.display.update()
-        clock.tick(10)
+        clock.tick(2)
     
     pygame.quit()
     quit()
-        # else:
-        #     if check_target():
-        #         target = next_random_target()
-        
-            # if self_collision:
-            #     game_over_or_again()
-            # else:
-            #     if check_target():
-            #         next_random_target()
-                # else:
-                #     check_direction()
 
-
-    # clock, font_style, score_font = PARAMS["clock"], PARAMS["font_style"], PARAMS["score_font"]
-    # dis_width, dis_height, dis = PARAMS["dis_width"], PARAMS["dis_height"], PARAMS["dis"]
-    # game_over_status = PARAMS["game_over_status"]
-    # PARAMS["caption"]
-    
-    # while not game_over_status:
-    #     game_loop(dis, score_font, clock, font_style, dis_width, dis_height)
-    
 
 if __name__ == "__main__":
     main()

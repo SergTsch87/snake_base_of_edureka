@@ -55,30 +55,21 @@ def draw_grid(dis, grid_surface):
     dis.blit(grid_surface, (0, 0))
 
 
-# --------------------------------------------------------
-# Об'єднай ці дві функції в одну
+def display_info(snake_score, snake_speed, score_font, color, screen):
+    score_text = score_font.render("Score: " + str(snake_score), True, color)
+    speed_text = score_font.render("Snake_Speed: " + str(snake_speed), True, color)
+    screen.blit(score_text, [0, 0])
+    screen.blit(speed_text, [0, 30])
+
 
 # графіка
-def snake_score(score, score_font, color, dis):
-    value = score_font.render("Your score: " + str(score), True, color)
-    dis.blit(value, [0, 0])
-
-# графіка
-def display_info(score, speed, score_font, color, dis):
-    score_text = score_font.render("Score: " + str(score), True, color)
-    speed_text = score_font.render("Speed: " + str(speed), True, color)
-    dis.blit(score_text, [0, 0])
-    dis.blit(speed_text, [0, 30])
-# --------------------------------------------------------
-
-# графіка
-def draw_snake(snake_size_link, snake_coord_lists, dis, black):
+def draw_snake(snake_size_link, snake_coord_lists, dis, color):
     for xy_coord_link in snake_coord_lists:
-        pygame.draw.rect(dis, black, [xy_coord_link[0], xy_coord_link[1], snake_size_link, snake_size_link])
+        pygame.draw.rect(dis, color, [xy_coord_link[0], xy_coord_link[1], snake_size_link, snake_size_link])
 
 # графіка
-def draw_food(dis, green, food_x, food_y, snake_size_link):
-    pygame.draw.rect(dis, green, [food_x, food_y, snake_size_link, snake_size_link])
+def draw_food(dis, color, food_x, food_y, snake_size_link):
+    pygame.draw.rect(dis, color, [food_x, food_y, snake_size_link, snake_size_link])
 
 
 # графіка
@@ -115,3 +106,24 @@ def fade_to_black(dis):
 def coords_center_rect(list_coords):
     food_x, food_y, snake_size_link, snake_size_link = list_coords
     # print(f"food_x, food_y, snake_size_link, snake_size_link = {food_x}, {food_y}, {snake_size_link}, {snake_size_link}")
+
+
+def func1(a, b):
+    return a + b
+
+
+def func2(x, y):
+    return x - y
+
+
+def func3(m, n):
+    return m * n
+
+
+def func_all(func1, func2, func3):
+    # x = y = 0
+    # print(f'func_all == {func1(x, y) + func2(x, y) + func3(x, y)}')
+    print(f'func_all == {func1 + func2 + func3}')
+
+
+func_all(func1(1, 2), func2(3, 4), func3(5, 6))
