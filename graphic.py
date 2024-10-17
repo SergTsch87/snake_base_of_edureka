@@ -1,5 +1,5 @@
 #!usr/bin/env
-import pygame, time
+import pygame, time, food
 
 
 # Пояснення до функцій:
@@ -36,7 +36,6 @@ import pygame, time
 
 # Використання pygame.Surface для збереження сітки ігрового поля
 # Це зменшить кількість малювань і збільшить продуктивність.
-# графіка
 def create_grid_surface(dis_width, dis_height, snake_size_link, black, blue):
     # Створюємо новий Surface з потрібними розмірами
     grid_surface = pygame.Surface((dis_width, dis_height))
@@ -51,7 +50,6 @@ def create_grid_surface(dis_width, dis_height, snake_size_link, black, blue):
 
 
 def draw_grid(dis, grid_surface):
-    # Просто блітимо вже намальований grid_surface на екран
     dis.blit(grid_surface, (0, 0))
 
 
@@ -59,20 +57,17 @@ def display_info(snake_score, snake_speed, score_font, color, screen):
     score_text = score_font.render("Score: " + str(snake_score), True, color)
     speed_text = score_font.render("Snake_Speed: " + str(snake_speed), True, color)
     screen.blit(score_text, [0, 0])
-    screen.blit(speed_text, [0, 30])
+    screen.blit(speed_text, [2 * score_text.get_width(), 0])
 
 
-# графіка
 def draw_snake(snake_size_link, snake_coord_lists, dis, color):
     for xy_coord_link in snake_coord_lists:
         pygame.draw.rect(dis, color, [xy_coord_link[0], xy_coord_link[1], snake_size_link, snake_size_link])
 
-# графіка
 def draw_food(dis, color, food_x, food_y, snake_size_link):
     pygame.draw.rect(dis, color, [food_x, food_y, snake_size_link, snake_size_link])
 
 
-# графіка
 def msg_lost(msg, color, font_style, dis_width, dis_height, dis):
     mesg = font_style.render(msg, True, color)
     dis.blit(mesg, [dis_width/6, dis_height/3])
@@ -81,7 +76,6 @@ def msg_lost(msg, color, font_style, dis_width, dis_height, dis):
 # -------------------------------------
 # Функції завершення гри
 
-# графіка
 def gameover_anim(dis, colors):
     for color in colors:
         dis.fill(color)
@@ -89,7 +83,6 @@ def gameover_anim(dis, colors):
         time.sleep(0.5)
 
 
-# графіка
 def fade_to_black(dis):
     fade_surface = pygame.Surface(dis.get_size())
     fade_surface.fill((0, 0, 0))
@@ -100,13 +93,6 @@ def fade_to_black(dis):
         pygame.display.update()
         # pygame.time.delay(50)
 # -------------------------------------
-
-# list_coords = [food_x, food_y, snake_size_link, snake_size_link]
-# логіка
-def coords_center_rect(list_coords):
-    food_x, food_y, snake_size_link, snake_size_link = list_coords
-    # print(f"food_x, food_y, snake_size_link, snake_size_link = {food_x}, {food_y}, {snake_size_link}, {snake_size_link}")
-
 
 def func1(a, b):
     return a + b
@@ -123,7 +109,7 @@ def func3(m, n):
 def func_all(func1, func2, func3):
     # x = y = 0
     # print(f'func_all == {func1(x, y) + func2(x, y) + func3(x, y)}')
-    print(f'func_all == {func1 + func2 + func3}')
+    # print(f'func_all == {func1 + func2 + func3}')
 
 
 func_all(func1(1, 2), func2(3, 4), func3(5, 6))

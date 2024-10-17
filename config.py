@@ -17,7 +17,7 @@ PARAMS =  {
             "length_of_snake": 1,
             "clock":  pygame.time.Clock(),
             "font_style":  pygame.font.SysFont("bahnshrift", 25),
-            "score_font":  pygame.font.SysFont("comicsansms", 20),
+            "score_font":  pygame.font.SysFont("comicsansms", 18),
             "screen_width": 400,
             "screen_height": 400,
             "snake_score": 1,

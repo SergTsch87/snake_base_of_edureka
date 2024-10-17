@@ -10,10 +10,18 @@ import move
 import food
 
 # Додатки до гри:
-#     Намалюй текстову інформацію (бали та час) нагорі, над ігровим полем
-#     Нова система координат
-#     Зроби ефективне створення нової їжі за допомогою available_positions()
-#     Перешкоди на полі
+# +0,8    Намалюй текстову інформацію (бали та час) нагорі, над ігровим полем
+# ?.. Чи вона потрібна?..    Нова система координат
+#     Зроби ефективне створення нової їжі за допомогою available_positions
+    # Треба змінити код ф-ції random_target() у food.py
+
+#     Перешкоди на полі:
+#       намальовані межі поля
+#       лабіринт
+#       випадкові блоки, стіни
+#       "кораблі" з гри "морський бій"
+#       відсутність меж, - коли Змійка виходить з одної стіни, а виходить з протилежної стіни
+
 #     Звуки до гри
 #     Павза
 #     Система рівнів
@@ -365,7 +373,7 @@ import food
     #     return x1, y1
 
 def reset_game_state():
-    print(f"begin reset_game_state")
+    # print(f"begin reset_game_state")
     PARAMS["snake_coord_lists"] = [[0, 0]]
     PARAMS["length_of_snake"] = 1
     PARAMS["x1"] = int(PARAMS["dis_width"] / 2)
@@ -380,7 +388,7 @@ def reset_game_state():
     PARAMS["snake_head"] = [0, 0]
     PARAMS["food_x"] = None
     PARAMS["food_y"] = None
-    print(f"the end reset_game_state")
+    # print(f"the end reset_game_state")
     
 
 
@@ -562,15 +570,19 @@ def init_game():
     x1_change, y1_change, snake_coord_lists = PARAMS["x1_change"], PARAMS["y1_change"], PARAMS["snake_coord_lists"]
     key_direction_map = PARAMS["key_direction_map"]
     PARAMS["caption"]
-    target = random_target()
-    print(f'in init_game(): target = {target}')
+    # target = food.random_target(screen_width, snake_size_link, screen_height, snake_coord_lists)
+    target = food.random_target(screen_width, snake_size_link, screen_height)
+    # print(f'in init_game(): target = {target}')
     return target, x1_change, y1_change
 
 
-def random_target():
-    x = random.randint(0, (screen_width // snake_size_link) - 1) * snake_size_link
-    y = random.randint(0, (screen_height // snake_size_link) - 1) * snake_size_link
-    return x, y
+# # !!!
+# # Це аналог функції get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists) у файлі food.py (!)
+# # Тому, random_target тре дуже обережно всюди замінити на food.get_coord_new_food(...)
+# def random_target():
+#     x = random.randint(0, (screen_width // snake_size_link) - 1) * snake_size_link
+#     y = random.randint(0, (screen_height // snake_size_link) - 1) * snake_size_link
+#     return x, y
 
 
 def get_coord_direction(x1_change, y1_change):
@@ -584,7 +596,9 @@ def get_coord_direction(x1_change, y1_change):
 
 
 def next_random_target():
-    target = random_target()
+    # target = food.random_target(screen_width, snake_size_link, screen_height, snake_coord_lists)
+    target = food.random_target(screen_width, snake_size_link, screen_height)
+    # random_target(dis_width, snake_size_link, dis_height, snake_coord_lists)
     return target
 
 
@@ -604,9 +618,9 @@ def check_collisions():
 
 
 def game_over_or_again():
-    font = pygame.font.Font(None, 12)
+    font = pygame.font.Font(None, 25)
     game_over_text = font.render('Game Over! Press Y to play again or N to exit.', True, red)
-    screen.blit(game_over_text, (screen_width // 4, screen_height // 2))
+    screen.blit(game_over_text, (screen_width // 6, screen_height // 2))
     pygame.display.update()
     
     while True:
@@ -615,7 +629,7 @@ def game_over_or_again():
                 if event.key == pygame.K_n:
                     return 'exit'
                 elif event.key == pygame.K_y:
-                    print(f"Before main.reset_game_state() in elif event.key == pygame.K_y:")
+                    # print(f"Before main.reset_game_state() in elif event.key == pygame.K_y:")
                     return 'continue'
             elif event.type == pygame.QUIT:
                 return 'exit'
@@ -638,8 +652,16 @@ def grow_snake():
 def draw_grid_snake_food(grid_surface, target, *kwarg):
     graphic.draw_grid(screen, grid_surface)
     graphic.draw_snake(snake_size_link, snake, screen, green)
+    
     graphic.draw_food(screen, red, target[0], target[1], snake_size_link)
-    graphic.display_info(snake_score, snake_speed, score_font, black, screen)
+    
+    graphic.display_info(snake_score, snake_speed, score_font, black, screen), 
+
+
+# А чи є потреба у такій функції?..
+# def set_coords(my_x, my_y):
+#     return my_x * snake_size_link, my_y * snake_size_link
+
 
 def main():
     target, x1_change, y1_change = init_game()
