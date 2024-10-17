@@ -11,7 +11,9 @@ import food
 
 # Додатки до гри:
 # +0,8    Намалюй текстову інформацію (бали та час) нагорі, над ігровим полем
+
 # ?.. Чи вона потрібна?..    Нова система координат
+
 #     Зроби ефективне створення нової їжі за допомогою available_positions
     # Треба змінити код ф-ції random_target() у food.py
 
@@ -554,7 +556,8 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
         # ================================================
 
 black, red, blue, green, colors = PARAMS["black"], PARAMS["red"], PARAMS["blue"], PARAMS["green"], PARAMS["colors"]
-snake_size_link, snake_speed, snake_score = PARAMS["snake_size_link"], PARAMS["snake_speed"], PARAMS["snake_score"]
+snake_size_link, snake_speed = PARAMS["snake_size_link"], PARAMS["snake_speed"]
+snake_score = PARAMS["snake_score"]
 length_of_snake, key_direction_map = PARAMS["length_of_snake"], PARAMS["key_direction_map"]
 screen_width, screen_height, screen = PARAMS["screen_width"], PARAMS["screen_height"], PARAMS["screen"]
 food_x, food_y, eat_count = PARAMS["food_x"], PARAMS["food_y"], PARAMS["eat_count"]
@@ -566,12 +569,13 @@ snake = [(screen_width // 2, screen_height // 2)]
 game_is_running = True
 
 def init_game():
+    target = None
     pygame.init()
     x1_change, y1_change, snake_coord_lists = PARAMS["x1_change"], PARAMS["y1_change"], PARAMS["snake_coord_lists"]
     key_direction_map = PARAMS["key_direction_map"]
     PARAMS["caption"]
-    # target = food.random_target(screen_width, snake_size_link, screen_height, snake_coord_lists)
-    target = food.random_target(screen_width, snake_size_link, screen_height)
+    target = food.random_target(screen_width, snake_size_link, screen_height, snake, target)
+    # target = food.random_target(screen_width, snake_size_link, screen_height)
     # print(f'in init_game(): target = {target}')
     return target, x1_change, y1_change
 
@@ -595,11 +599,11 @@ def get_coord_direction(x1_change, y1_change):
     return x1_change, y1_change
 
 
-def next_random_target():
-    # target = food.random_target(screen_width, snake_size_link, screen_height, snake_coord_lists)
-    target = food.random_target(screen_width, snake_size_link, screen_height)
-    # random_target(dis_width, snake_size_link, dis_height, snake_coord_lists)
-    return target
+# def next_random_target(snake):
+#     target = food.random_target(screen_width, snake_size_link, screen_height, snake)  # Тут рекурсія!..
+#     # target = food.random_target(screen_width, snake_size_link, screen_height)
+#     # random_target(dis_width, snake_size_link, dis_height, snake)
+#     return target
 
 
 def check_collision_with_walls():
@@ -649,13 +653,13 @@ def grow_snake():
     snake.append(snake[-1])
 
 
-def draw_grid_snake_food(grid_surface, target, *kwarg):
+def draw_grid_snake_food(grid_surface, target, snake_score, *kwarg):
     graphic.draw_grid(screen, grid_surface)
     graphic.draw_snake(snake_size_link, snake, screen, green)
     
     graphic.draw_food(screen, red, target[0], target[1], snake_size_link)
     
-    graphic.display_info(snake_score, snake_speed, score_font, black, screen), 
+    graphic.display_info(snake_score, snake_speed, score_font, black, screen)
 
 
 # А чи є потреба у такій функції?..
@@ -666,7 +670,8 @@ def draw_grid_snake_food(grid_surface, target, *kwarg):
 def main():
     target, x1_change, y1_change = init_game()
     grid_surface = graphic.create_grid_surface(screen_width, screen_height, snake_size_link, black, blue)
-
+    snake_score = PARAMS["snake_score"]
+    
     while game_is_running:
         screen.fill(black)
         x1_change, y1_change = get_coord_direction(x1_change, y1_change)
@@ -679,14 +684,16 @@ def main():
                 break
             elif get_game_over_or_again == 'continue':
                 target, x1_change, y1_change = init_game()
+                snake_score = 0
                 snake.clear()
                 snake.append((screen_width // 2, screen_height // 2))
         
         if check_target(target):
-            target = next_random_target()
+            snake_score += 1
+            target = food.next_random_target(snake, screen_width, snake_size_link, screen_height, target)
             grow_snake()
             
-        draw_grid_snake_food(grid_surface, target, graphic.draw_grid, graphic.draw_snake, graphic.draw_food, graphic.display_info)
+        draw_grid_snake_food(grid_surface, target, snake_score, graphic.draw_grid, graphic.draw_snake, graphic.draw_food, graphic.display_info)
         
         pygame.display.update()
         clock.tick(2)

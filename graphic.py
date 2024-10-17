@@ -92,24 +92,24 @@ def fade_to_black(dis):
         dis.blit(fade_surface, (0, 0))
         pygame.display.update()
         # pygame.time.delay(50)
-# -------------------------------------
+# # -------------------------------------
 
-def func1(a, b):
-    return a + b
-
-
-def func2(x, y):
-    return x - y
+# def func1(a, b):
+#     return a + b
 
 
-def func3(m, n):
-    return m * n
+# def func2(x, y):
+#     return x - y
 
 
-def func_all(func1, func2, func3):
-    # x = y = 0
-    # print(f'func_all == {func1(x, y) + func2(x, y) + func3(x, y)}')
-    # print(f'func_all == {func1 + func2 + func3}')
+# def func3(m, n):
+#     return m * n
 
 
-func_all(func1(1, 2), func2(3, 4), func3(5, 6))
+# def func_all(func1, func2, func3):
+#     # x = y = 0
+#     # print(f'func_all == {func1(x, y) + func2(x, y) + func3(x, y)}')
+#     # print(f'func_all == {func1 + func2 + func3}')
+
+
+# func_all(func1(1, 2), func2(3, 4), func3(5, 6))
