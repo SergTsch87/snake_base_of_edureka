@@ -1,5 +1,5 @@
 #!usr/bin/env
-import pygame
+import pygame, os
 import time
 import random
 from config import PARAMS
@@ -14,7 +14,7 @@ import food
 
 # ?.. Чи вона потрібна?..    Нова система координат
 
-#     Зроби ефективне створення нової їжі за допомогою available_positions
+#  +1   Зроби ефективне створення нової їжі за допомогою available_positions
     # Треба змінити код ф-ції random_target() у food.py
 
 #     Перешкоди на полі:
@@ -24,7 +24,9 @@ import food
 #       "кораблі" з гри "морський бій"
 #       відсутність меж, - коли Змійка виходить з одної стіни, а виходить з протилежної стіни
 
-#     Звуки до гри
+# Зроби рівень, в якому поле є гіперплощиною (як у грі в Nokia), - де Змійка вільно переходить межу поля, зявляючись на її протилежному боці
+
+# +0,5    Звуки до гри: лишилось додати самі файли, з авторськими правами тощо. Here: https://opensource.com/article/20/9/add-sound-python-game
 #     Павза
 #     Система рівнів
 #     Дошка досягнень
@@ -571,13 +573,59 @@ game_is_running = True
 def init_game():
     target = None
     pygame.init()
+    
+    pygame.mixer.init()
+    dir_for_sound_files = os.path.join(os.path.dirname(__file__), 'sound')
+    crunch = pygame.mixer.Sound(os.path.join(dir_for_sound_files, 'crunch.ogg'))
+    collision = pygame.mixer.Sound(os.path.join(dir_for_sound_files, 'collision.wav'))
+    # pygame.mixer.Sound.play(my_file) # Під час програвання певної події
+    pygame.mixer.Sound.play(collision)
+    
+    
+    # Додавання та запуск фонової музики:
+    bckgrnd_music = pygame.mixer.music.load(os.path.join(dir_for_sound_files, 'bckgrnd Space Jazz.mp3'))
+    pygame.mixer.music.play(-1)
+
+
+    # crunch - хрум, хруст
+    # yum - ням
+
+    # sound/crunch.ogg
+    #     Apple Bite by AntumDeluge -- https://freesound.org/s/584290/ -- License: Creative Commons 0
+    #     apple bite by sonicmariobrotha -- https://freesound.org/s/333825/ -- License: Creative Commons 0
+
+    # sound/collision.wav
+    #     Hit 2 by NearTheAtmoshphere -- https://freesound.org/s/676462/ -- License: Creative Commons 0
+
+    
+    # background
+    # sound/bckgrnd sirius-by-sascha-ende-from-filmmusic-io.mp3
+    #     https://filmmusic.io/uk/song/3233-sirius
+    #     Sirius by Sascha Ende
+    #         мрійливі, пливучі синтезаторні підкладки та заводний ритм. ідеально підходить для космічних тем!
+    
+    # sound/bckgrnd Space Jazz.mp3
+    # "Space Jazz"
+    # https://incompetech.com/music/royalty-free/music.html
+    #     Instruments: Synths
+    #     Feel: Bright, Grooving, Relaxed
+    #     While working on a video game, the script called for "Space Jazz". I don't know if that is a thing, but this is what I made. Sounds like Space Jazz to me!
+    #     ISRC: USUAN2100030
+    #     Uploaded: 2021-09-29
+    
+    # Credit this piece by copying the following to your credits section:
+    #     "Space Jazz" Kevin MacLeod (incompetech.com)
+    #     Licensed under Creative Commons: By Attribution 4.0 License
+    #     http://creativecommons.org/licenses/by/4.0/
+
+
     x1_change, y1_change, snake_coord_lists = PARAMS["x1_change"], PARAMS["y1_change"], PARAMS["snake_coord_lists"]
     key_direction_map = PARAMS["key_direction_map"]
     PARAMS["caption"]
     target = food.random_target(screen_width, snake_size_link, screen_height, snake, target)
     # target = food.random_target(screen_width, snake_size_link, screen_height)
     # print(f'in init_game(): target = {target}')
-    return target, x1_change, y1_change
+    return target, x1_change, y1_change, crunch, collision
 
 
 # # !!!
@@ -666,9 +714,22 @@ def draw_grid_snake_food(grid_surface, target, snake_score, *kwarg):
 # def set_coords(my_x, my_y):
 #     return my_x * snake_size_link, my_y * snake_size_link
 
+def create_barrier():
+    pass
+    # чарунка
+    # пряма лінія
+    # зигзаг
+    # квадрат 2 на 2
+    # лабіринт
+    # периметр ("паркан" для поля)
+
+    # створити координати
+    # намалювати
+    # обробити зіткнення
+
 
 def main():
-    target, x1_change, y1_change = init_game()
+    target, x1_change, y1_change, crunch, collision = init_game()
     grid_surface = graphic.create_grid_surface(screen_width, screen_height, snake_size_link, black, blue)
     snake_score = PARAMS["snake_score"]
     
@@ -679,16 +740,18 @@ def main():
 
         # if_check_collisions()
         if check_collisions():
+            pygame.mixer.Sound.play(collision)
             get_game_over_or_again = game_over_or_again()
             if get_game_over_or_again == 'exit':
                 break
             elif get_game_over_or_again == 'continue':
-                target, x1_change, y1_change = init_game()
+                target, x1_change, y1_change, crunch, collision = init_game()
                 snake_score = 0
                 snake.clear()
                 snake.append((screen_width // 2, screen_height // 2))
         
         if check_target(target):
+            pygame.mixer.Sound.play(crunch)
             snake_score += 1
             target = food.next_random_target(snake, screen_width, snake_size_link, screen_height, target)
             grow_snake()
@@ -696,7 +759,7 @@ def main():
         draw_grid_snake_food(grid_surface, target, snake_score, graphic.draw_grid, graphic.draw_snake, graphic.draw_food, graphic.display_info)
         
         pygame.display.update()
-        clock.tick(2)
+        clock.tick(5)
     
     pygame.quit()
     quit()
