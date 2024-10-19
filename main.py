@@ -570,25 +570,23 @@ clock, font_style, score_font = PARAMS["clock"], PARAMS["font_style"], PARAMS["s
 snake = [(screen_width // 2, screen_height // 2)]
 game_is_running = True
 
-def init_game():
-    target = None
-    pygame.init()
-    
+
+def init_sound():
     pygame.mixer.init()
     dir_for_sound_files = os.path.join(os.path.dirname(__file__), 'sound')
     crunch = pygame.mixer.Sound(os.path.join(dir_for_sound_files, 'crunch.ogg'))
     collision = pygame.mixer.Sound(os.path.join(dir_for_sound_files, 'collision.wav'))
     # pygame.mixer.Sound.play(my_file) # Під час програвання певної події
     pygame.mixer.Sound.play(collision)
-    
+        # dir_for_sound_files = os.path.join(os.path.dirname(__file__), 'sound')
+    # crunch = pygame.mixer.Sound(os.path.join(dir_for_sound_files, 'crunch.ogg'))
+    # collision = pygame.mixer.Sound(os.path.join(dir_for_sound_files, 'collision.wav'))
+    # # pygame.mixer.Sound.play(my_file) # Під час програвання певної події
+    # pygame.mixer.Sound.play(collision)
     
     # Додавання та запуск фонової музики:
     bckgrnd_music = pygame.mixer.music.load(os.path.join(dir_for_sound_files, 'bckgrnd Space Jazz.mp3'))
     pygame.mixer.music.play(-1)
-
-
-    # crunch - хрум, хруст
-    # yum - ням
 
     # sound/crunch.ogg
     #     Apple Bite by AntumDeluge -- https://freesound.org/s/584290/ -- License: Creative Commons 0
@@ -596,7 +594,6 @@ def init_game():
 
     # sound/collision.wav
     #     Hit 2 by NearTheAtmoshphere -- https://freesound.org/s/676462/ -- License: Creative Commons 0
-
     
     # background
     # sound/bckgrnd sirius-by-sascha-ende-from-filmmusic-io.mp3
@@ -618,23 +615,170 @@ def init_game():
     #     Licensed under Creative Commons: By Attribution 4.0 License
     #     http://creativecommons.org/licenses/by/4.0/
 
+    return crunch, collision
+
+
+    # list_coords_all_cells_barriers = [] # Після створення усіх перешкод,
+    #                             # заповнюємо цей список, - задля перевірки неперетину координат кожної перешкоди
+
+# barrier_rectangle = {
+#         'barrier_type': 'rectangle',
+#         'x_start': 5,
+#         'y_start': 5,
+#         'length_line_1': 0,
+#         'length_line_2': 0,
+#         'width': 2,
+#         'height': 2,
+#         'direction': None,
+#         'barrier_list_coords': координати відповідного квадрата
+#     }
+
+
+
+# cell_size = snake_size_link_in_cells = 1
+
+# barrier_cell = {
+#         'barrier_type': 'cell',
+#         'x_start': 5,
+#         'y_start': 5,
+#         'length_line_1': 5, 
+#         'length_line_2': 0,
+#         'direction': None,
+#         'barrier_list_coords': ('x_start', 'y_start')
+#     }
+
+#     barrier_line = {
+#         'barrier_type': 'line',
+#         'x_start': 5,
+#         'y_start': 5,
+#         'length_line_1': 5,
+#         'length_line_2': 0,
+#         'direction': 'vert',
+#         'barrier_list_coords': [[('x_start'.value, 'y_start'.value), ('x_start'.value, 'y_start'.value + 'length_line'.value)]],
+
+#     }
+
+#     barrier_zigzag = {
+#         'barrier_type': 'zigzag',
+#         'x_start': 7,
+#         'y_start': 7,
+#         'length_line_1': 5,
+#         'length_line_2': 3,
+#         'direction': 'vert',
+#         'barrier_list_coords': [[('x_start'.value, 'y_start'.value), ('x_start'.value, 'y_start'.value + 'length_line_1'.value)],
+#                                 [('x_start'.value + 1, 'y_start'.value + 'length_line_1'.value), ('x_start'.value + 1, 'y_start'.value + 'length_line_1'.value + 'length_line_2'.value)]]
+#     }
+
+def get_list_coords_cell(x_start, y_start):
+    barrier_list_coords = [x_start, y_start]
+    return barrier_list_coords
+
+# def create_barrier(dict_params_screen, barrier_type = 'cell', x_start = 0, y_start = 0, length_line_1 = 0, length_line_2 = 0, width = 0, height = 0, direction = 'vert'):
+def create_barrier(barrier_type, x_start, y_start, length_line_1, length_line_2, width, height):
+    # barrier_type = ['cell', 'line', 'zigzag', 'rectangle']
+    if barrier_type == 'cell':
+        barrier_list_coords = [x_start, y_start]
+        return barrier_list_coords
+    
+    elif barrier_type == 'line':
+        barrier_list_coords = []
+        for _tem in range(length_line_1):
+            y_start += 1
+            barrier_list_coords.append((x_start, y_start))
+        return barrier_list_coords
+    
+    elif barrier_type == 'zigzag':
+        barrier_list_coords = []
+        for _tem in range(length_line_1):
+            y_start += 1
+            barrier_list_coords.append((x_start, y_start))
+    
+        x_start += 1
+        y_start += length_line_1
+        for _tem in range(length_line_2):
+            y_start += 1
+            barrier_list_coords.append((x_start, y_start))
+        return barrier_list_coords
+        
+    elif barrier_type == 'rectangle':
+        barrier_list_coords = []
+        for _ in range(width):
+            x_start += 1
+            for _ in range(height):
+                y_start += 1
+                barrier_list_coords.append((x_start, y_start))
+        return barrier_list_coords
+
+# def draw_snake(snake_size_link, snake_coord_lists, dis, color):
+#     for xy_coord_link in snake_coord_lists:
+#         pygame.draw.rect(dis, color, [xy_coord_link[0], xy_coord_link[1], snake_size_link, snake_size_link])
+
+# def draw_food(dis, color, food_x, food_y, snake_size_link):
+#     pygame.draw.rect(dis, color, [food_x, food_y, snake_size_link, snake_size_link])
+
+    # чарунка
+    # пряма лінія
+    # зигзаг
+    # квадрат 2 на 2
+    # лабіринт
+    # периметр ("паркан" для поля)
+
+    # створити координати
+    # намалювати
+    # обробити зіткнення
+
+
+def init_game():
+    target = None
+    pygame.init()
+    crunch, collision = init_sound()
+
+    # --------------
+
+    # dict_params_screen = 0
+    # dict_params_barrier = 0
+    dict_params_screen = {
+        'width_screen_in_cells': 20,
+        'height_screen_in_cells': 20,
+        'cell_size': snake_size_link
+    }
+
+    # barrier_types = {
+    #     'cell',
+    #     'line',
+    #     'zigzag',
+    #     'rectangle'
+    # }
+
+    # dict_params_barrier = {
+    #     'barrier_type': ['cell', 'line', 'zigzag', 'rectangle'],
+    #     'x_start': -1,
+    #     'y_start': -1,
+    #     'length_line_1': 0, 
+    #     'length_line_2': 0,
+    #     'direction': ['vert', 'horz', None],
+    #     'barrier_list_coords': [(None, None)]
+    # }
+
+    # barrier_list_coords_1 = [[(3, 3), (8, 3)]]
+    # barrier_list_coords_2 = [[(1, 1), (2, 3)]]
+    # create_barrier(dict_params_screen, barrier_type = 'cell', x_start = 0, y_start = 0, length_line_1 = 0, length_line_2 = 0, width = 0, height = 0, direction = 'vert')
+    barrier_list_coords_0 = create_barrier('cell', 5, 5, 0, 0, 0, 0)
+    print(f'barrier_list_coords_0 == {barrier_list_coords_0}')
+    barrier_list_coords_1 = create_barrier('line', 3, 3, 5, 0, 0, 0)
+    print(f'barrier_list_coords_1 == {barrier_list_coords_1}')
+    barrier_list_coords_2 = create_barrier('zigzag', 1, 1, 3, 2, 0, 0)
+    print(f'barrier_list_coords_2 == {barrier_list_coords_2}')
+    barrier_list_coords_1 = create_barrier('rectangle', 10, 10, 0, 0, 2, 3)
+    print(f'barrier_list_coords_1 == {barrier_list_coords_1}')
+
+    # --------------
 
     x1_change, y1_change, snake_coord_lists = PARAMS["x1_change"], PARAMS["y1_change"], PARAMS["snake_coord_lists"]
     key_direction_map = PARAMS["key_direction_map"]
     PARAMS["caption"]
     target = food.random_target(screen_width, snake_size_link, screen_height, snake, target)
-    # target = food.random_target(screen_width, snake_size_link, screen_height)
-    # print(f'in init_game(): target = {target}')
     return target, x1_change, y1_change, crunch, collision
-
-
-# # !!!
-# # Це аналог функції get_coord_new_food(dis_width, snake_size_link, dis_height, snake_coord_lists) у файлі food.py (!)
-# # Тому, random_target тре дуже обережно всюди замінити на food.get_coord_new_food(...)
-# def random_target():
-#     x = random.randint(0, (screen_width // snake_size_link) - 1) * snake_size_link
-#     y = random.randint(0, (screen_height // snake_size_link) - 1) * snake_size_link
-#     return x, y
 
 
 def get_coord_direction(x1_change, y1_change):
@@ -645,13 +789,6 @@ def get_coord_direction(x1_change, y1_change):
             if length_of_snake == 1 or not(x1_change + new_x_change == 0 and y1_change + new_y_change == 0):
                 return new_x_change, new_y_change
     return x1_change, y1_change
-
-
-# def next_random_target(snake):
-#     target = food.random_target(screen_width, snake_size_link, screen_height, snake)  # Тут рекурсія!..
-#     # target = food.random_target(screen_width, snake_size_link, screen_height)
-#     # random_target(dis_width, snake_size_link, dis_height, snake)
-#     return target
 
 
 def check_collision_with_walls():
@@ -681,7 +818,6 @@ def game_over_or_again():
                 if event.key == pygame.K_n:
                     return 'exit'
                 elif event.key == pygame.K_y:
-                    # print(f"Before main.reset_game_state() in elif event.key == pygame.K_y:")
                     return 'continue'
             elif event.type == pygame.QUIT:
                 return 'exit'
@@ -714,19 +850,6 @@ def draw_grid_snake_food(grid_surface, target, snake_score, *kwarg):
 # def set_coords(my_x, my_y):
 #     return my_x * snake_size_link, my_y * snake_size_link
 
-def create_barrier():
-    pass
-    # чарунка
-    # пряма лінія
-    # зигзаг
-    # квадрат 2 на 2
-    # лабіринт
-    # периметр ("паркан" для поля)
-
-    # створити координати
-    # намалювати
-    # обробити зіткнення
-
 
 def main():
     target, x1_change, y1_change, crunch, collision = init_game()
@@ -738,7 +861,6 @@ def main():
         x1_change, y1_change = get_coord_direction(x1_change, y1_change)
         update_snake(x1_change, y1_change)
 
-        # if_check_collisions()
         if check_collisions():
             pygame.mixer.Sound.play(collision)
             get_game_over_or_again = game_over_or_again()
