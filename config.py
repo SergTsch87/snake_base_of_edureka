@@ -8,6 +8,7 @@ PARAMS =  {
             "green": (0, 255, 0),
             "colors": [(255, 0, 0), (255, 165, 0), (255, 255, 0), (0, 255, 0), (0, 0, 255), (75, 0, 130), (238, 130, 238)],
             "snake_size_link": 20,  # Параметр ланки (елемента) ланцюга Змійки
+            "CELL_SIZE": 20,
             "snake_speed": 20,
             "game_over_status": False,
             "game_lost_state": False,
