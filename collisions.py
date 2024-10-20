@@ -1,5 +1,5 @@
 #!usr/bin/env
-import pygame
+import pygame, main
 
 # зіткнення
 # collisions.py
@@ -17,7 +17,6 @@ import pygame
 #         Функція зупинки змійки у момент зіткнення.
 #         Ще треба буде її створити
 
-# логіка
 def self_collision(snake_coord_lists, snake_head, game_lost_state):
     for x in snake_coord_lists[:-1]:
         if x == snake_head:
@@ -27,9 +26,8 @@ def self_collision(snake_coord_lists, snake_head, game_lost_state):
     return game_lost_state
 
 
-# логіка
-def check_collision_with_walls(x1, y1, dis_width, dis_height):
-    return not(0 <= x1 < dis_width and 0 <= y1 < dis_height)
+# def check_collision_with_walls(x1, y1, dis_width, dis_height):
+#     return not(0 <= x1 < dis_width and 0 <= y1 < dis_height)
 
 
 
@@ -38,3 +36,20 @@ def check_collision_with_walls(x1, y1, dis_width, dis_height):
 #     x1_change = y1_change = 0
 #     game_lost_state = True
 #     return True
+
+
+# !!!
+# Саме після передачі цих 3-х ф-цій до цього файлу, обробка зіткнень зникла...
+def check_collision_with_walls(snake):
+    return not(0 <= snake[0][0] < main.screen_width and 0 <= snake[0][1] < main.screen_height)
+
+
+def self_collision(snake):
+    head = snake[0]
+    if head in snake[1:]:
+        return True
+    return False
+
+
+def check_collisions(snake):
+    return check_collision_with_walls(snake) or self_collision(snake)

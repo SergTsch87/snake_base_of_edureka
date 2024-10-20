@@ -68,6 +68,33 @@ def draw_food(dis, color, food_x, food_y, snake_size_link):
     pygame.draw.rect(dis, color, [food_x, food_y, snake_size_link, snake_size_link])
 
 
+def draw_barrier(CELL_SIZE, screen, color, barrier_type, barrier_list_coords):
+    if barrier_type == 'cell':
+        pygame.draw.rect(screen, color, [barrier_list_coords[0][0], barrier_list_coords[0][1], CELL_SIZE, CELL_SIZE])
+    else:
+        for x, y in barrier_list_coords:
+            pygame.draw.rect(screen, color, [x, y, CELL_SIZE, CELL_SIZE])
+
+
+def draw_all_barriers_on_field(all_barriers, CELL_SIZE, screen, green):
+    barrier_types = [
+            'cell',
+            'line',
+            'zigzag',
+            'rectangle'
+        ]
+    for item in range(4):
+        draw_barrier(CELL_SIZE, screen, green, barrier_types[item], all_barriers[item])
+
+
+def draw_grid_snake_food(grid_surface, target, snake_score, snake_size_link, snake, screen, lazur, snake_speed, score_font, black, red, all_barriers, CELL_SIZE, green):
+    draw_grid(screen, grid_surface)
+    draw_snake(snake_size_link, snake, screen, lazur)
+    draw_food(screen, red, target[0], target[1], snake_size_link)
+    display_info(snake_score, snake_speed, score_font, black, screen)
+    draw_all_barriers_on_field(all_barriers, CELL_SIZE, screen, green)
+
+
 def msg_lost(msg, color, font_style, dis_width, dis_height, dis):
     mesg = font_style.render(msg, True, color)
     dis.blit(mesg, [dis_width/6, dis_height/3])

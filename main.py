@@ -7,7 +7,14 @@ import graphic
 import input_handle
 import collisions
 import move
-import food
+import food, sound, barriers, init_settings
+
+# !!!
+# Саме після того, як я додав константу cell_size,
+# Змійка отримала "можливість" рухатись у зворотньому напрямку,
+# навіть за довжини > 1,
+# що призводить до швидкого завершення гри...
+#     Треба це виправити!
 
 # Додатки до гри:
 # +0,8    Намалюй текстову інформацію (бали та час) нагорі, над ігровим полем
@@ -557,7 +564,7 @@ def game_loop(dis, score_font, clock, font_style, dis_width, dis_height):
         # ================================================
         # ================================================
 
-black, red, blue, green, colors = PARAMS["black"], PARAMS["red"], PARAMS["blue"], PARAMS["green"], PARAMS["colors"]
+black, red, blue, green, lazur, colors = PARAMS["black"], PARAMS["red"], PARAMS["blue"], PARAMS["green"], PARAMS["lazur"], PARAMS["colors"]
 snake_size_link, snake_speed = PARAMS["snake_size_link"], PARAMS["snake_speed"]
 snake_score = PARAMS["snake_score"]
 length_of_snake, key_direction_map = PARAMS["length_of_snake"], PARAMS["key_direction_map"]
@@ -569,210 +576,6 @@ clock, font_style, score_font = PARAMS["clock"], PARAMS["font_style"], PARAMS["s
 
 snake = [(screen_width // 2, screen_height // 2)]
 game_is_running = True
-
-
-def init_sound():
-    pygame.mixer.init()
-    dir_for_sound_files = os.path.join(os.path.dirname(__file__), 'sound')
-    crunch = pygame.mixer.Sound(os.path.join(dir_for_sound_files, 'crunch.ogg'))
-    collision = pygame.mixer.Sound(os.path.join(dir_for_sound_files, 'collision.wav'))
-    # pygame.mixer.Sound.play(my_file) # Під час програвання певної події
-    pygame.mixer.Sound.play(collision)
-        # dir_for_sound_files = os.path.join(os.path.dirname(__file__), 'sound')
-    # crunch = pygame.mixer.Sound(os.path.join(dir_for_sound_files, 'crunch.ogg'))
-    # collision = pygame.mixer.Sound(os.path.join(dir_for_sound_files, 'collision.wav'))
-    # # pygame.mixer.Sound.play(my_file) # Під час програвання певної події
-    # pygame.mixer.Sound.play(collision)
-    
-    # Додавання та запуск фонової музики:
-    # !!! Потім розкоментуй!
-    # bckgrnd_music = pygame.mixer.music.load(os.path.join(dir_for_sound_files, 'bckgrnd Space Jazz.mp3'))
-    # pygame.mixer.music.play(-1)
-
-    # sound/crunch.ogg
-    #     Apple Bite by AntumDeluge -- https://freesound.org/s/584290/ -- License: Creative Commons 0
-    #     apple bite by sonicmariobrotha -- https://freesound.org/s/333825/ -- License: Creative Commons 0
-
-    # sound/collision.wav
-    #     Hit 2 by NearTheAtmoshphere -- https://freesound.org/s/676462/ -- License: Creative Commons 0
-    
-    # background
-    # sound/bckgrnd sirius-by-sascha-ende-from-filmmusic-io.mp3
-    #     https://filmmusic.io/uk/song/3233-sirius
-    #     Sirius by Sascha Ende
-    #         мрійливі, пливучі синтезаторні підкладки та заводний ритм. ідеально підходить для космічних тем!
-    
-    # sound/bckgrnd Space Jazz.mp3
-    # "Space Jazz"
-    # https://incompetech.com/music/royalty-free/music.html
-    #     Instruments: Synths
-    #     Feel: Bright, Grooving, Relaxed
-    #     While working on a video game, the script called for "Space Jazz". I don't know if that is a thing, but this is what I made. Sounds like Space Jazz to me!
-    #     ISRC: USUAN2100030
-    #     Uploaded: 2021-09-29
-    
-    # Credit this piece by copying the following to your credits section:
-    #     "Space Jazz" Kevin MacLeod (incompetech.com)
-    #     Licensed under Creative Commons: By Attribution 4.0 License
-    #     http://creativecommons.org/licenses/by/4.0/
-
-    return crunch, collision
-
-
-    # list_coords_all_cells_barriers = [] # Після створення усіх перешкод,
-    #                             # заповнюємо цей список, - задля перевірки неперетину координат кожної перешкоди
-
-# barrier_rectangle = {
-#         'barrier_type': 'rectangle',
-#         'x_start': 5,
-#         'y_start': 5,
-#         'length_line_1': 0,
-#         'length_line_2': 0,
-#         'width': 2,
-#         'height': 2,
-#         'direction': None,
-#         'barrier_list_coords': координати відповідного квадрата
-#     }
-
-
-
-# cell_size = snake_size_link_in_cells = 1
-
-# barrier_cell = {
-#         'barrier_type': 'cell',
-#         'x_start': 5,
-#         'y_start': 5,
-#         'length_line_1': 5, 
-#         'length_line_2': 0,
-#         'direction': None,
-#         'barrier_list_coords': ('x_start', 'y_start')
-#     }
-
-#     barrier_line = {
-#         'barrier_type': 'line',
-#         'x_start': 5,
-#         'y_start': 5,
-#         'length_line_1': 5,
-#         'length_line_2': 0,
-#         'direction': 'vert',
-#         'barrier_list_coords': [[('x_start'.value, 'y_start'.value), ('x_start'.value, 'y_start'.value + 'length_line'.value)]],
-
-#     }
-
-#     barrier_zigzag = {
-#         'barrier_type': 'zigzag',
-#         'x_start': 7,
-#         'y_start': 7,
-#         'length_line_1': 5,
-#         'length_line_2': 3,
-#         'direction': 'vert',
-#         'barrier_list_coords': [[('x_start'.value, 'y_start'.value), ('x_start'.value, 'y_start'.value + 'length_line_1'.value)],
-#                                 [('x_start'.value + 1, 'y_start'.value + 'length_line_1'.value), ('x_start'.value + 1, 'y_start'.value + 'length_line_1'.value + 'length_line_2'.value)]]
-#     }
-
-def get_list_coords_cell(x_start, y_start, CELL_SIZE):
-    barrier_list_coords = [(x_start - 1 * CELL_SIZE, y_start - 1 * CELL_SIZE)]
-    # barrier_list_coords_20 = map(lambda x[0]: x[0]*20, barrier_list_coords[0])
-    print(f'\ncell: {barrier_list_coords}\n')
-    return barrier_list_coords
-
-
-def get_list_coords_line(x_start, y_start, length_line, CELL_SIZE):
-    barrier_list_coords = []
-    x_start -= 1 * CELL_SIZE
-    y_start -= 1 * CELL_SIZE
-    print(f'\nlength_line == {length_line}')
-    for _ in range(length_line):
-        barrier_list_coords.append((x_start, y_start))
-        y_start += 1 * CELL_SIZE
-    print(f'line: {barrier_list_coords}\n')
-    return barrier_list_coords
-
-
-def get_list_coords_zigzag(x_start, y_start, length_line_1, length_line_2, CELL_SIZE):
-    barrier_list_coords = []
-    x_start -= 1 * CELL_SIZE
-    y_start -= 1 * CELL_SIZE
-    print(f'\nlength_line_1 == {length_line_1}\n')
-    print(f'\nlength_line_2 == {length_line_2}\n')
-    for _ in range(length_line_1):
-        barrier_list_coords.append((x_start, y_start))
-        y_start += 1 * CELL_SIZE
-        
-    x_start += 1 * CELL_SIZE
-    y_start += length_line_1 - 1 * CELL_SIZE
-    for _ in range(length_line_2):
-        barrier_list_coords.append((x_start, y_start))
-        y_start += 1 * CELL_SIZE
-    print(f'zigzag: {barrier_list_coords}')
-    return barrier_list_coords
-
-
-def get_list_coords_rectangle(x_start, y_start, width, height, CELL_SIZE):
-    print(f'\nwidth == {width}\n')
-    print(f'\nheight == {height}\n')
-    x_start -= 1 * CELL_SIZE
-    y_start -= 1 * CELL_SIZE
-    barrier_list_coords = []
-    for _ in range(width):
-        for _ in range(height):
-            barrier_list_coords.append((x_start, y_start))
-            y_start += 1 * CELL_SIZE
-        x_start += 1 * CELL_SIZE
-        y_start -= height * CELL_SIZE
-    print(f'rectangle: {barrier_list_coords}')
-    return barrier_list_coords
-
-# def create_barrier(dict_params_screen, barrier_type = 'cell', x_start = 0, y_start = 0, length_line_1 = 0, length_line_2 = 0, width = 0, height = 0, direction = 'vert'):
-def create_barrier(barrier_type, x_start, y_start, length_line_1, length_line_2, width, height, CELL_SIZE):
-    # barrier_type = ['cell', 'line', 'zigzag', 'rectangle']
-    # x_start *= 20
-    # y_start *= 20
-    nums = [x_start, y_start]
-    nums_mul_20 = map(lambda x: cell_to_pixels(x, CELL_SIZE), nums)
-    # x_start, y_start, length_line_1, length_line_2, width, height = nums_mul_20
-    x_start, y_start = nums_mul_20
-    if barrier_type == 'cell':
-        barrier_list_coords = get_list_coords_cell(x_start, y_start, CELL_SIZE)
-        return barrier_list_coords
-    
-    elif barrier_type == 'line':
-        barrier_list_coords = get_list_coords_line(x_start, y_start, length_line_1, CELL_SIZE)
-        return barrier_list_coords
-    
-    elif barrier_type == 'zigzag':
-        barrier_list_coords = get_list_coords_zigzag(x_start, y_start, length_line_1, length_line_2, CELL_SIZE)
-        return barrier_list_coords
-        
-    elif barrier_type == 'rectangle':
-        barrier_list_coords = get_list_coords_rectangle(x_start, y_start, width, height, CELL_SIZE)
-        return barrier_list_coords
-
-
-# def draw_barrier(snake_size_link, barrier_list_coords, screen, color):
-# size_cell = snake_size_link // 20
-size_cell = snake_size_link
-# !!! Шукай помилку у визначенні, серед вхідних параметрів!
-# draw_barrier(size_cell, screen, red, barrier_types[item], barriers[item])
-def draw_barrier(size_cell, screen, color, barrier_type, barrier_list_coords):
-    # print(f'barrier_list_coords == {barrier_list_coords}')
-    if barrier_type == 'cell':
-        # print(f'draw_barrier > if > barrier_list_coords == {barrier_list_coords}')
-        pygame.draw.rect(screen, color, [barrier_list_coords[0][0], barrier_list_coords[0][1], size_cell, size_cell])
-    else:
-        # len_barrier_list_coords = len(barrier_list_coords)
-        # for xy_coord_link in range(len_barrier_list_coords):
-        # print(f'draw_barrier > else > barrier_list_coords == {barrier_list_coords}')
-        for x, y in barrier_list_coords:
-            pygame.draw.rect(screen, color, [x, y, size_cell, size_cell])
-            # pygame.draw.rect(screen, color, [item[0][0], item[0][1], size_cell, size_cell])
-
-# def draw_snake(snake_size_link, snake_coord_lists, dis, color):
-#     for xy_coord_link in snake_coord_lists:
-#         pygame.draw.rect(dis, color, [xy_coord_link[0], xy_coord_link[1], snake_size_link, snake_size_link])
-
-# def draw_food(dis, color, food_x, food_y, snake_size_link):
-#     pygame.draw.rect(dis, color, [food_x, food_y, snake_size_link, snake_size_link])
 
     # чарунка
     # пряма лінія
@@ -786,189 +589,40 @@ def draw_barrier(size_cell, screen, color, barrier_type, barrier_list_coords):
     # обробити зіткнення
 
 
-def cell_to_pixels(cell_coord, CELL_SIZE):
-    return cell_coord * CELL_SIZE
-
-
-def pixels_to_cell(cell_coord, CELL_SIZE):
-    return cell_coord // CELL_SIZE
-
-
-def init_game():
-    target = None
-    pygame.init()
-    crunch, collision = init_sound()
-
-    # --------------
-    CELL_SIZE = PARAMS['CELL_SIZE']
-    # dict_params_screen = 0
-    # dict_params_barrier = 0
-    dict_params_screen = {
-        'width_screen_in_cells': 20,
-        'height_screen_in_cells': 20,
-        'cell_size': snake_size_link
-    }
-
-    # barrier_types = {
-    #     'cell',
-    #     'line',
-    #     'zigzag',
-    #     'rectangle'
-    # }
-
-    # dict_params_barrier = {
-    #     'barrier_type': ['cell', 'line', 'zigzag', 'rectangle'],
-    #     'x_start': -1,
-    #     'y_start': -1,
-    #     'length_line_1': 0, 
-    #     'length_line_2': 0,
-    #     'direction': ['vert', 'horz', None],
-    #     'barrier_list_coords': [(None, None)]
-    # }
-
-    # barrier_list_coords_1 = [[(3, 3), (8, 3)]]
-    # barrier_list_coords_2 = [[(1, 1), (2, 3)]]
-    # create_barrier(dict_params_screen, barrier_type = 'cell', x_start = 0, y_start = 0, length_line_1 = 0, length_line_2 = 0, width = 0, height = 0, direction = 'vert')
-    barrier_list_coords_0 = create_barrier('cell', 5, 5, 0, 0, 0, 0, CELL_SIZE)
-    # print(f'barrier_list_coords_0 == {barrier_list_coords_0}')
-    barrier_list_coords_1 = create_barrier('line', 7, 7, 5, 0, 0, 0, CELL_SIZE)
-    # print(f'barrier_list_coords_1 == {barrier_list_coords_1}')
-    barrier_list_coords_2 = create_barrier('zigzag', 1, 1, 3, 2, 0, 0, CELL_SIZE)
-    # print(f'barrier_list_coords_2 == {barrier_list_coords_2}')
-    barrier_list_coords_3 = create_barrier('rectangle', 10, 10, 0, 0, 2, 3, CELL_SIZE)
-    # print(f'barrier_list_coords_3 == {barrier_list_coords_3}')
-
-    # --------------
-    x1_change, y1_change, snake_coord_lists = PARAMS["x1_change"], PARAMS["y1_change"], PARAMS["snake_coord_lists"]
-    key_direction_map = PARAMS["key_direction_map"]
-    PARAMS["caption"]
-    target = food.random_target(screen_width, snake_size_link, screen_height, snake, target)
-    barriers = [barrier_list_coords_0, barrier_list_coords_1, barrier_list_coords_2, barrier_list_coords_3]
-    return target, x1_change, y1_change, crunch, collision, barriers, CELL_SIZE
-
-
-def get_coord_direction(x1_change, y1_change):
-    for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN and event.key in key_direction_map:
-            new_x_change, new_y_change = key_direction_map[event.key]
-            
-            if length_of_snake == 1 or not(x1_change + new_x_change == 0 and y1_change + new_y_change == 0):
-                return new_x_change, new_y_change
-    return x1_change, y1_change
-
-
-def check_collision_with_walls():
-    return not(0 <= snake[0][0] < screen_width and 0 <= snake[0][1] < screen_height)
-    
-
-def self_collision():
-    head = snake[0]
-    if head in snake[1:]:
-        return True
-    return False
-
-
-def check_collisions():
-    return check_collision_with_walls() or self_collision()
-
-
-def game_over_or_again():
-    font = pygame.font.Font(None, 25)
-    game_over_text = font.render('Game Over! Press Y to play again or N to exit.', True, red)
-    screen.blit(game_over_text, (screen_width // 6, screen_height // 2))
-    pygame.display.update()
-    
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_n:
-                    return 'exit'
-                elif event.key == pygame.K_y:
-                    return 'continue'
-            elif event.type == pygame.QUIT:
-                return 'exit'
-
-
-def check_target(target):
-    return snake[0] == target
-
-
-def update_snake(x1_change, y1_change):
-    new_head = (snake[0][0] + x1_change, snake[0][1] + y1_change)
-    snake.insert(0, new_head)
-    snake.pop()
-
-
-def grow_snake():
-    snake.append(snake[-1])
-
-
-def draw_grid_snake_food(grid_surface, target, snake_score, *kwarg):
-    graphic.draw_grid(screen, grid_surface)
-    graphic.draw_snake(snake_size_link, snake, screen, green)
-    
-    graphic.draw_food(screen, red, target[0], target[1], snake_size_link)
-    
-    graphic.display_info(snake_score, snake_speed, score_font, black, screen)
-    # draw_barrier(size_cell, screen, red, barrier_type, barrier_list_coords)
-
-
 # А чи є потреба у такій функції?..
 # def set_coords(my_x, my_y):
 #     return my_x * snake_size_link, my_y * snake_size_link
 
 
 def main():
-    target, x1_change, y1_change, crunch, collision, barriers, CELL_SIZE = init_game()
+    target, x1_change, y1_change, crunch, collision, all_barriers, CELL_SIZE = init_settings.init_game()
     grid_surface = graphic.create_grid_surface(screen_width, screen_height, snake_size_link, black, blue)
     snake_score = PARAMS["snake_score"]
     
     while game_is_running:
         screen.fill(black)
-        x1_change, y1_change = get_coord_direction(x1_change, y1_change)
-        update_snake(x1_change, y1_change)
+        x1_change, y1_change = input_handle.get_coord_direction(x1_change, y1_change)
+        move.update_snake(x1_change, y1_change, snake)
 
-        if check_collisions():
+        if collisions.check_collisions(snake):
             pygame.mixer.Sound.play(collision)
-            get_game_over_or_again = game_over_or_again()
+            get_game_over_or_again = input_handle.game_over_or_again()
             if get_game_over_or_again == 'exit':
                 break
             elif get_game_over_or_again == 'continue':
-                target, x1_change, y1_change, crunch, collision, burriers, CELL_SIZE = init_game()
+                target, x1_change, y1_change, crunch, collision, burriers, CELL_SIZE = init_settings.init_game()
                 snake_score = 0
                 snake.clear()
                 snake.append((screen_width // 2, screen_height // 2))
         
-        if check_target(target):
+        if move.check_target(target, snake):
             pygame.mixer.Sound.play(crunch)
             snake_score += 1
             target = food.next_random_target(snake, screen_width, snake_size_link, screen_height, target)
-            grow_snake()
+            move.grow_snake(snake)
             
-        draw_grid_snake_food(grid_surface, target, snake_score, graphic.draw_grid, graphic.draw_snake, graphic.draw_food, graphic.display_info)
+        graphic.draw_grid_snake_food(grid_surface, target, snake_score, snake_size_link, snake, screen, lazur, snake_speed, score_font, black, red, all_barriers, CELL_SIZE, green)
         
-        barrier_types = [
-            'cell',
-            'line',
-            'zigzag',
-            'rectangle'
-        ]
-        # for barrier_type in barriers:
-        for item in range(4):
-            # print(f'barrier_types[item] == {barrier_types[item]}')
-            # print(f'barriers[item] == {barriers[item]}')
-
-            # !!! Шукай помилку у визначенні, серед вхідних параметрів!
-            draw_barrier(size_cell, screen, green, barrier_types[item], barriers[item])
-
-        # pygame.draw.rect(dis, color, [xy_coord_link[0], xy_coord_link[1], snake_size_link, snake_size_link])
-        # pygame.draw.rect(dis, color, [food_x, food_y, snake_size_link, snake_size_link])
-
-        # draw_barrier(size_cell, screen, red, 'cell', barriers[0])
-        # draw_barrier(size_cell, screen, red, 'line', barriers[1])
-        # draw_barrier(size_cell, screen, red, 'zigzag', barriers[2])
-        # draw_barrier(size_cell, screen, red, 'rectangle', barriers[3])
-            
         pygame.display.update()
         clock.tick(5)
     
