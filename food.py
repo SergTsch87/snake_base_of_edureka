@@ -3,33 +3,30 @@ import random, main
 
 # Їжа
 # food.py
-#     get_coord_new_food
-#         Щокроку змінює список available_positions згідно алгоритму, - щоб залишати тіко ті чарунки,
-#         які вільні для створення їжі на них
-#         Повертає int(food_x), int(food_y)
 
 
-def next_random_target(snake, dis_width, snake_size_link, dis_height, target):
-    target = random_target(dis_width, snake_size_link, dis_height, snake, target)
+def next_random_target(snake, dis_width, CELL_SIZE, dis_height, target, all_coords_all_barriers):
+    target = random_target(dis_width, CELL_SIZE, dis_height, snake, target, all_coords_all_barriers)
     return target
 
 
-def random_target(dis_width, snake_size_link, dis_height, snake, target):
-    # # other code:
-    # x = random.randint(0, (dis_width // snake_size_link) - 1) * snake_size_link
-    # y = random.randint(0, (dis_height // snake_size_link) - 1) * snake_size_link
-
+def random_target(dis_width, CELL_SIZE, dis_height, snake, target, all_coords_all_barriers):
 #     # Щоб перевірити, чи правильно створюються координати у списку available_positions, - достатньо перевіряти,
 #     # чи збігаються усі координати поля, які поза ци списком, з усіма координатами Змійки, Їжі та перешкод
     available_positions = {
-        (x, y) for x in range(0, dis_width, snake_size_link) for y in range(0, dis_height, snake_size_link)
+        (x, y) for x in range(0, dis_width, CELL_SIZE) for y in range(0, dis_height, CELL_SIZE)
     }
 
     not_available_positions = set(snake)
+    # print(f'not_available_positions == {not_available_positions}')
+    print(f'snake == {snake}')
     not_available_positions.add(target)
-    # print(f'\nNOT check_target(target): not_available_positions = {not_available_positions}')
-    # print(f'Їжа: {target}\n')
-
+    # print(f'not_available_positions == {not_available_positions}')
+    print(f'target == {target}')
+    print(f'all_coords_all_barriers == {all_coords_all_barriers}')
+    not_available_positions.update(all_coords_all_barriers)
+    # print(f'not_available_positions == {not_available_positions}')
+    
     # Видаляємо з неї усі координати тіла Змійки та Їжі:
     available_positions.difference_update(not_available_positions)
 

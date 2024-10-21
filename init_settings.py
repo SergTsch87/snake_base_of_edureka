@@ -24,12 +24,11 @@ def init_game():
     x1_change, y1_change, snake_coord_lists = config.PARAMS["x1_change"], config.PARAMS["y1_change"], config.PARAMS["snake_coord_lists"]
     key_direction_map = config.PARAMS["key_direction_map"]
     config.PARAMS["caption"]
-    target = food.random_target(main.screen_width, main.snake_size_link, main.screen_height, main.snake, target)
-    
     all_barriers = [barrier_list_coords_0, barrier_list_coords_1, barrier_list_coords_2, barrier_list_coords_3]
-        # list_coords_all_cells_barriers = []
-        # Після створення усіх перешкод, заповнюємо цей список, - 
-        # задля перевірки неперетину координат кожної перешкоди
     all_coords_all_barriers = list(itertools.chain(*all_barriers))
+    target = food.random_target(main.screen_width, CELL_SIZE, main.screen_height, main.snake, target, all_coords_all_barriers)
+    
+    # all_barriers = [barrier_list_coords_0, barrier_list_coords_1, barrier_list_coords_2, barrier_list_coords_3]
+    # all_coords_all_barriers = list(itertools.chain(*all_barriers))
     
     return target, x1_change, y1_change, crunch, collision, all_barriers, all_coords_all_barriers, CELL_SIZE

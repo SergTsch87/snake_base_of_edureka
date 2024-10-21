@@ -13,16 +13,6 @@ import pygame, main
 #     check_collision_with_walls
 #         Перевірка на зіткнення Змійки (її голови) зі стіною
 
-#     stop_snake
-#         Функція зупинки змійки у момент зіткнення.
-#         Ще треба буде її створити
-
-# Функція зупинки змійки у момент зіткнення
-# def stop_snake():
-#     x1_change = y1_change = 0
-#     game_lost_state = True
-#     return True
-
 
 def check_collision_with_barriers(snake, all_coords_all_barriers):
     head = snake[0]

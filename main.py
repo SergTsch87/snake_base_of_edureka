@@ -25,17 +25,10 @@ game_is_running = True
 
     # чарунка    # пряма лінія    # зигзаг    # квадрат 2 на 2    # лабіринт    # периметр ("паркан" для поля)
 
-    # створити координати       # намалювати    # обробити зіткнення
-
-
-# А чи є потреба у такій функції?..
-# def set_coords(my_x, my_y):
-#     return my_x * snake_size_link, my_y * snake_size_link
-
 
 def main():
     target, x1_change, y1_change, crunch, collision, all_barriers, all_coords_all_barriers, CELL_SIZE = init_settings.init_game()
-    grid_surface = graphic.create_grid_surface(screen_width, screen_height, snake_size_link, black, blue)
+    grid_surface = graphic.create_grid_surface(screen_width, screen_height, CELL_SIZE, black, blue)
     snake_score = PARAMS["snake_score"]
     
     while game_is_running:
@@ -57,10 +50,10 @@ def main():
         if move.check_target(target, snake):
             pygame.mixer.Sound.play(crunch)
             snake_score += 1
-            target = food.next_random_target(snake, screen_width, snake_size_link, screen_height, target)
+            target = food.next_random_target(snake, screen_width, CELL_SIZE, screen_height, target, all_coords_all_barriers)
             move.grow_snake(snake)
             
-        graphic.draw_grid_snake_food(grid_surface, target, snake_score, snake_size_link, snake, screen, lazur, snake_speed, score_font, black, red, all_barriers, CELL_SIZE, green)
+        graphic.draw_grid_snake_food(grid_surface, target, snake_score, CELL_SIZE, snake, screen, lazur, snake_speed, score_font, black, red, all_barriers, green)
         
         pygame.display.update()
         clock.tick(5)

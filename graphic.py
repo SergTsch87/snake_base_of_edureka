@@ -36,14 +36,14 @@ import pygame, time, food
 
 # Використання pygame.Surface для збереження сітки ігрового поля
 # Це зменшить кількість малювань і збільшить продуктивність.
-def create_grid_surface(dis_width, dis_height, snake_size_link, black, blue):
+def create_grid_surface(dis_width, dis_height, CELL_SIZE, black, blue):
     # Створюємо новий Surface з потрібними розмірами
     grid_surface = pygame.Surface((dis_width, dis_height))
     grid_surface.fill(blue)
 
-    for x in range(0, dis_width, snake_size_link):
+    for x in range(0, dis_width, CELL_SIZE):
         pygame.draw.line(grid_surface, black, (x, 0), (x, dis_height))
-    for y in range(0, dis_height, snake_size_link):
+    for y in range(0, dis_height, CELL_SIZE):
         pygame.draw.line(grid_surface, black, (0, y), (dis_width, y))
 
     return grid_surface
@@ -60,12 +60,12 @@ def display_info(snake_score, snake_speed, score_font, color, screen):
     screen.blit(speed_text, [2 * score_text.get_width(), 0])
 
 
-def draw_snake(snake_size_link, snake_coord_lists, dis, color):
+def draw_snake(CELL_SIZE, snake_coord_lists, dis, color):
     for xy_coord_link in snake_coord_lists:
-        pygame.draw.rect(dis, color, [xy_coord_link[0], xy_coord_link[1], snake_size_link, snake_size_link])
+        pygame.draw.rect(dis, color, [xy_coord_link[0], xy_coord_link[1], CELL_SIZE, CELL_SIZE])
 
-def draw_food(dis, color, food_x, food_y, snake_size_link):
-    pygame.draw.rect(dis, color, [food_x, food_y, snake_size_link, snake_size_link])
+def draw_food(dis, color, food_x, food_y, CELL_SIZE):
+    pygame.draw.rect(dis, color, [food_x, food_y, CELL_SIZE, CELL_SIZE])
 
 
 # !!!
@@ -89,10 +89,10 @@ def draw_all_barriers_on_field(all_barriers, CELL_SIZE, screen, green):
         draw_barrier(CELL_SIZE, screen, green, barrier_types[item], all_barriers[item])
 
 
-def draw_grid_snake_food(grid_surface, target, snake_score, snake_size_link, snake, screen, lazur, snake_speed, score_font, black, red, all_barriers, CELL_SIZE, green):
+def draw_grid_snake_food(grid_surface, target, snake_score, CELL_SIZE, snake, screen, lazur, snake_speed, score_font, black, red, all_barriers, green):
     draw_grid(screen, grid_surface)
-    draw_snake(snake_size_link, snake, screen, lazur)
-    draw_food(screen, red, target[0], target[1], snake_size_link)
+    draw_snake(CELL_SIZE, snake, screen, lazur)
+    draw_food(screen, red, target[0], target[1], CELL_SIZE)
     display_info(snake_score, snake_speed, score_font, black, screen)
     draw_all_barriers_on_field(all_barriers, CELL_SIZE, screen, green)
 
@@ -121,24 +121,3 @@ def fade_to_black(dis):
         dis.blit(fade_surface, (0, 0))
         pygame.display.update()
         # pygame.time.delay(50)
-# # -------------------------------------
-
-# def func1(a, b):
-#     return a + b
-
-
-# def func2(x, y):
-#     return x - y
-
-
-# def func3(m, n):
-#     return m * n
-
-
-# def func_all(func1, func2, func3):
-#     # x = y = 0
-#     # print(f'func_all == {func1(x, y) + func2(x, y) + func3(x, y)}')
-#     # print(f'func_all == {func1 + func2 + func3}')
-
-
-# func_all(func1(1, 2), func2(3, 4), func3(5, 6))
