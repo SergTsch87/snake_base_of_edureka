@@ -22,18 +22,19 @@ def get_list_coords_zigzag(x_start, y_start, length_line_1, length_line_2, CELL_
     barrier_list_coords = []
     x_start -= 1 * CELL_SIZE
     y_start -= 1 * CELL_SIZE
-    # print(f'\nlength_line_1 == {length_line_1}\n')
-    # print(f'\nlength_line_2 == {length_line_2}\n')
+    print(f'\nlength_line_1 == {length_line_1}\n')
+    print(f'\nlength_line_2 == {length_line_2}\n')
     for _ in range(length_line_1):
         barrier_list_coords.append((x_start, y_start))
         y_start += 1 * CELL_SIZE
         
     x_start += 1 * CELL_SIZE
-    y_start += length_line_1 - 1 * CELL_SIZE
+    # y_start += length_line_1 - 1 * CELL_SIZE
+    y_start -= 1 * CELL_SIZE
     for _ in range(length_line_2):
         barrier_list_coords.append((x_start, y_start))
         y_start += 1 * CELL_SIZE
-    # print(f'zigzag: {barrier_list_coords}')
+    print(f'zigzag: {barrier_list_coords}')
     return barrier_list_coords
 
 

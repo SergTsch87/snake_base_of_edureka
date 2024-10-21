@@ -68,6 +68,8 @@ def draw_food(dis, color, food_x, food_y, snake_size_link):
     pygame.draw.rect(dis, color, [food_x, food_y, snake_size_link, snake_size_link])
 
 
+# !!!
+# Як покращити цей код, щоб перешкоди малювались лиш раз, в init_game(), методом blit ?..
 def draw_barrier(CELL_SIZE, screen, color, barrier_type, barrier_list_coords):
     if barrier_type == 'cell':
         pygame.draw.rect(screen, color, [barrier_list_coords[0][0], barrier_list_coords[0][1], CELL_SIZE, CELL_SIZE])

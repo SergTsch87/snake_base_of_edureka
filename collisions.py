@@ -24,6 +24,13 @@ import pygame, main
 #     return True
 
 
+def check_collision_with_barriers(snake, all_coords_all_barriers):
+    head = snake[0]
+    if head in all_coords_all_barriers:
+        return True
+    return False
+
+
 def check_collision_with_walls(snake):
     return not(0 <= snake[0][0] < main.screen_width and 0 <= snake[0][1] < main.screen_height)
 
@@ -35,5 +42,5 @@ def self_collision(snake):
     return False
 
 
-def check_collisions(snake):
-    return check_collision_with_walls(snake) or self_collision(snake)
+def check_collisions(snake, all_coords_all_barriers):
+    return check_collision_with_walls(snake) or self_collision(snake) or check_collision_with_barriers(snake, all_coords_all_barriers)

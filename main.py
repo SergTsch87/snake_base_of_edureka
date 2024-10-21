@@ -601,7 +601,7 @@ game_is_running = True
 
 
 def main():
-    target, x1_change, y1_change, crunch, collision, all_barriers, CELL_SIZE = init_settings.init_game()
+    target, x1_change, y1_change, crunch, collision, all_barriers, all_coords_all_barriers, CELL_SIZE = init_settings.init_game()
     grid_surface = graphic.create_grid_surface(screen_width, screen_height, snake_size_link, black, blue)
     snake_score = PARAMS["snake_score"]
     
@@ -610,13 +610,13 @@ def main():
         x1_change, y1_change = input_handle.get_coord_direction(x1_change, y1_change, snake)
         move.update_snake(x1_change, y1_change, snake)
 
-        if collisions.check_collisions(snake):
+        if collisions.check_collisions(snake, all_coords_all_barriers):
             pygame.mixer.Sound.play(collision)
             get_game_over_or_again = input_handle.game_over_or_again()
             if get_game_over_or_again == 'exit':
                 break
             elif get_game_over_or_again == 'continue':
-                target, x1_change, y1_change, crunch, collision, burriers, CELL_SIZE = init_settings.init_game()
+                target, x1_change, y1_change, crunch, collision, burriers, all_coords_all_barriers, CELL_SIZE = init_settings.init_game()
                 snake_score = 0
                 snake.clear()
                 snake.append((screen_width // 2, screen_height // 2))
