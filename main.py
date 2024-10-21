@@ -15,6 +15,12 @@ import food, sound, barriers, init_settings
 # навіть за довжини > 1,
 # що призводить до швидкого завершення гри...
 #     Треба це виправити!
+# Змійка іноді рухається у зворотньому напрямку.
+# Але, через якусь "випадкову"(?) к-сть кроків, гра завершується
+# !!!
+# Виправив помилку:
+# Просто замість старої змінної length_of_snake, яка вже ніде не використовується у новому коді,
+# написав len(snake) в умові get_coord_direction()
 
 # Додатки до гри:
 # +0,8    Намалюй текстову інформацію (бали та час) нагорі, над ігровим полем
@@ -601,7 +607,7 @@ def main():
     
     while game_is_running:
         screen.fill(black)
-        x1_change, y1_change = input_handle.get_coord_direction(x1_change, y1_change)
+        x1_change, y1_change = input_handle.get_coord_direction(x1_change, y1_change, snake)
         move.update_snake(x1_change, y1_change, snake)
 
         if collisions.check_collisions(snake):

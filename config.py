@@ -32,10 +32,10 @@ PARAMS =  {
     }
 
 PARAMS["key_direction_map"] = {
-            pygame.K_LEFT: (-PARAMS["snake_size_link"], 0),
-            pygame.K_RIGHT: (PARAMS["snake_size_link"], 0),
-            pygame.K_UP: (0, -PARAMS["snake_size_link"]),
-            pygame.K_DOWN: (0, PARAMS["snake_size_link"]),
+            pygame.K_LEFT: (-PARAMS["CELL_SIZE"], 0),
+            pygame.K_RIGHT: (PARAMS["CELL_SIZE"], 0),
+            pygame.K_UP: (0, -PARAMS["CELL_SIZE"]),
+            pygame.K_DOWN: (0, PARAMS["CELL_SIZE"]),
     }
 
 PARAMS["screen"] = pygame.display.set_mode((PARAMS["screen_width"], PARAMS["screen_height"]))

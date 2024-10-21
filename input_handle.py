@@ -79,23 +79,29 @@ def game_over_or_again():
             elif event.type == pygame.QUIT:
                 return 'exit'
 
-
-def control_snake_keys(event, key_direction_map, length_of_snake, x1_change, y1_change):
-    if event.type == pygame.KEYDOWN and event.key in key_direction_map:
-        new_x_change, new_y_change = key_direction_map[event.key]
+# Це код для старої версії, для game_lop()
+# def control_snake_keys(event, key_direction_map, length_of_snake, x1_change, y1_change):
+#     if event.type == pygame.KEYDOWN and event.key in key_direction_map:
+#         new_x_change, new_y_change = key_direction_map[event.key]
         
-        if length_of_snake == 1 or not(x1_change + new_x_change == 0 and y1_change + new_y_change == 0):
-            return new_x_change, new_y_change
+#         if length_of_snake == 1 or not(x1_change + new_x_change == 0 and y1_change + new_y_change == 0):
+#             return new_x_change, new_y_change
     
-    return x1_change, y1_change
+#     return x1_change, y1_change
 
 
-def get_coord_direction(x1_change, y1_change):
+def get_coord_direction(x1_change, y1_change, snake):
     length_of_snake, key_direction_map = config.PARAMS["length_of_snake"], config.PARAMS['key_direction_map']
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN and event.key in key_direction_map:
             new_x_change, new_y_change = key_direction_map[event.key]
             
-            if length_of_snake == 1 or not(x1_change + new_x_change == 0 and y1_change + new_y_change == 0):
+            # print(f'\nx1_change == {x1_change}\nnew_x_change =={new_x_change}\n')
+            # print(f'\ny1_change == {y1_change}\nnew_y_change =={new_y_change}\n')
+            # if length_of_snake == 1 or not(x1_change + new_x_change == 0 and y1_change + new_y_change == 0):
+            if len(snake) == 1 or not(x1_change + new_x_change == 0 and y1_change + new_y_change == 0):
+                # if length_of_snake > 1:
+                #     print(f'\nx1_change == {x1_change}\nnew_x_change =={new_x_change}\n')
+                #     print(f'\ny1_change == {y1_change}\nnew_y_change =={new_y_change}\n')
                 return new_x_change, new_y_change
     return x1_change, y1_change
