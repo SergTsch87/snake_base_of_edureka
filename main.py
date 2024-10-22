@@ -11,7 +11,8 @@ import food, sound, barriers, init_settings
 
 
 black, red, blue, green, lazur, colors = PARAMS["black"], PARAMS["red"], PARAMS["blue"], PARAMS["green"], PARAMS["lazur"], PARAMS["colors"]
-snake_size_link, snake_speed = PARAMS["snake_size_link"], PARAMS["snake_speed"]
+# snake_size_link = PARAMS["snake_size_link"]
+snake_speed = PARAMS["snake_speed"]
 snake_score = PARAMS["snake_score"]
 length_of_snake, key_direction_map = PARAMS["length_of_snake"], PARAMS["key_direction_map"]
 screen_width, screen_height, screen = PARAMS["screen_width"], PARAMS["screen_height"], PARAMS["screen"]
@@ -32,6 +33,11 @@ def main():
     snake_score = PARAMS["snake_score"]
     
     while game_is_running:
+        # if prapor:
+        #     гра працює
+        # else:
+        #     гра зупиняється
+
         screen.fill(black)
         x1_change, y1_change = input_handle.get_coord_direction(x1_change, y1_change, snake)
         move.update_snake(x1_change, y1_change, snake)
