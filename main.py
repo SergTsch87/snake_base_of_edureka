@@ -28,18 +28,36 @@ game_is_running = True
 
 
 def main():
+    # if prapor:
+    #     гра працює
+    # else:
+    #     гра зупиняється
+    
     target, x1_change, y1_change, crunch, collision, all_barriers, all_coords_all_barriers, CELL_SIZE = init_settings.init_game()
     grid_surface = graphic.create_grid_surface(screen_width, screen_height, CELL_SIZE, black, blue)
     snake_score = PARAMS["snake_score"]
-    
-    while game_is_running:
-        # if prapor:
-        #     гра працює
-        # else:
-        #     гра зупиняється
+    is_paused = False
+    was_just_unpaused = False
 
+    while game_is_running:
+        
+        # is_paused = False
+        # game_paused = input_handle.pause(is_paused)
+        # print(f'game_paused == {game_paused}')
+    
+        # if game_paused:
+        #     print(f'\nIF game_paused...\n')
+        #     screen.fill(black)
+        #     x1_change, y1_change = 0, 0
+        #     head = snake[0]
+        #     graphic.draw_grid_snake_food(grid_surface, target, snake_score, CELL_SIZE, snake, screen, lazur, snake_speed, score_font, black, red, all_barriers, green)
+        #     pygame.display.update()
+        # else:
+        # print(f'\nELSE game_paused...\n')
         screen.fill(black)
-        x1_change, y1_change = input_handle.get_coord_direction(x1_change, y1_change, snake)
+        x1_change, y1_change, is_paused, was_just_unpaused = input_handle.get_coord_direction(x1_change, y1_change, snake, is_paused, was_just_unpaused)
+        if is_paused:
+            continue
         move.update_snake(x1_change, y1_change, snake)
 
         if collisions.check_collisions(snake, all_coords_all_barriers):
@@ -62,8 +80,8 @@ def main():
         graphic.draw_grid_snake_food(grid_surface, target, snake_score, CELL_SIZE, snake, screen, lazur, snake_speed, score_font, black, red, all_barriers, green)
         
         pygame.display.update()
-        clock.tick(5)
-    
+        clock.tick(3)
+
     pygame.quit()
     quit()
 

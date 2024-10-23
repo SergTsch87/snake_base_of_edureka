@@ -43,13 +43,23 @@ def game_over_or_again():
                     return 'continue'
             elif event.type == pygame.QUIT:
                 return 'exit'
+            
 
-
-def get_coord_direction(x1_change, y1_change, snake):
+def get_coord_direction(x1_change, y1_change, snake, is_paused, was_just_unpaused):
     length_of_snake, key_direction_map = config.PARAMS["length_of_snake"], config.PARAMS['key_direction_map']
     for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN and event.key in key_direction_map:
-            new_x_change, new_y_change = key_direction_map[event.key]
-            if len(snake) == 1 or not(x1_change + new_x_change == 0 and y1_change + new_y_change == 0):
-                return new_x_change, new_y_change
-    return x1_change, y1_change
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_p:
+                is_paused = not is_paused
+                was_just_unpaused = True if not is_paused else False
+                return x1_change, y1_change, is_paused, was_just_unpaused
+                
+            if not is_paused and not was_just_unpaused and event.key in key_direction_map:
+                new_x_change, new_y_change = key_direction_map[event.key]
+                if len(snake) == 1 or not(x1_change + new_x_change == 0 and y1_change + new_y_change == 0):
+                    return new_x_change, new_y_change, is_paused, was_just_unpaused
+
+    return x1_change, y1_change, is_paused, False
+
+# Поясни будь ласка, в яких бізнес-проєктах та бізнес-застосунках, дійсно доводиться писати вручну (без застосування готових стандартних бібліотек та інших засобів) алгоритми у Python-коді?
+# В яких проєктах та застосунках, таке доводиться робити найчастіше, а в яких - найменше?
