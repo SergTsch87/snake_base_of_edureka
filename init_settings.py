@@ -1,4 +1,4 @@
-import pygame, sound, config, barriers, food, main
+import pygame, sound, config, barriers, food, main, graphic
 import itertools
 
 
@@ -26,9 +26,15 @@ def init_game():
     config.PARAMS["caption"]
     all_barriers = [barrier_list_coords_0, barrier_list_coords_1, barrier_list_coords_2, barrier_list_coords_3]
     all_coords_all_barriers = list(itertools.chain(*all_barriers))
+
+    # Створення поверхні для перешкод
+    barriers_surface = pygame.Surface((main.screen_width, main.screen_height))
+    barriers_surface.set_colorkey((0,0,0)) # Чорний колір стає прозорим за потреби
+
+    # Малюємо перешкоди на поверхні
+    for barrier_list in all_barriers:
+        graphic.draw_barrier_on_surface(barriers_surface, barrier_list, CELL_SIZE, main.green)
+    
+
     target = food.random_target(main.screen_width, CELL_SIZE, main.screen_height, main.snake, target, all_coords_all_barriers)
-    
-    # all_barriers = [barrier_list_coords_0, barrier_list_coords_1, barrier_list_coords_2, barrier_list_coords_3]
-    # all_coords_all_barriers = list(itertools.chain(*all_barriers))
-    
-    return target, x1_change, y1_change, crunch, collision, all_barriers, all_coords_all_barriers, CELL_SIZE
+    return target, x1_change, y1_change, crunch, collision, all_barriers, all_coords_all_barriers, CELL_SIZE, barriers_surface

@@ -68,6 +68,12 @@ def draw_food(dis, color, food_x, food_y, CELL_SIZE):
     pygame.draw.rect(dis, color, [food_x, food_y, CELL_SIZE, CELL_SIZE])
 
 
+def draw_barrier_on_surface(surface, barrier_list_coords, CELL_SIZE, color):
+    # Малює перешкоди на заданій поверхні
+    for x, y in barrier_list_coords:
+        pygame.draw.rect(surface, color, [x, y, CELL_SIZE, CELL_SIZE])
+
+
 # !!!
 # Як покращити цей код, щоб перешкоди малювались лиш раз, в init_game(), методом blit ?..
 def draw_barrier(CELL_SIZE, screen, color, barrier_type, barrier_list_coords):

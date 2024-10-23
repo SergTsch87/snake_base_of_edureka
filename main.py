@@ -33,7 +33,7 @@ def main():
     # else:
     #     гра зупиняється
     
-    target, x1_change, y1_change, crunch, collision, all_barriers, all_coords_all_barriers, CELL_SIZE = init_settings.init_game()
+    target, x1_change, y1_change, crunch, collision, all_barriers, all_coords_all_barriers, CELL_SIZE, barriers_surface = init_settings.init_game()
     grid_surface = graphic.create_grid_surface(screen_width, screen_height, CELL_SIZE, black, blue)
     snake_score = PARAMS["snake_score"]
     is_paused = False
@@ -55,6 +55,7 @@ def main():
         # else:
         # print(f'\nELSE game_paused...\n')
         screen.fill(black)
+        screen.blit(barriers_surface, (0, 0)) # Відображення поверхні з перешкодами
         x1_change, y1_change, is_paused, was_just_unpaused = input_handle.get_coord_direction(x1_change, y1_change, snake, is_paused, was_just_unpaused)
         if is_paused:
             continue
@@ -66,7 +67,7 @@ def main():
             if get_game_over_or_again == 'exit':
                 break
             elif get_game_over_or_again == 'continue':
-                target, x1_change, y1_change, crunch, collision, burriers, all_coords_all_barriers, CELL_SIZE = init_settings.init_game()
+                target, x1_change, y1_change, crunch, collision, burriers, all_coords_all_barriers, CELL_SIZE, barriers_surface = init_settings.init_game()
                 snake_score = 0
                 snake.clear()
                 snake.append((screen_width // 2, screen_height // 2))
